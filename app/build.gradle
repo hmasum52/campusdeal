@@ -42,4 +42,7 @@ dependencies {
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // lottie animation
+    implementation 'com.airbnb.android:lottie:6.1.0'
 }
