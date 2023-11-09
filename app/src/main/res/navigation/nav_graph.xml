@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/onBoardingFragment">
 
     <fragment
         android:id="@+id/onBoardingFragment"
@@ -18,20 +18,44 @@
         android:id="@+id/homeFragment"
         android:name="com.codervai.campusdeal.screen.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <argument
+            android:name="showBottomNav"
+            app:argType="boolean"
+            android:defaultValue="true"
+            />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.codervai.campusdeal.screen.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+        <argument
+            android:name="showBottomNav"
+            app:argType="boolean"
+            android:defaultValue="true"
+            />
+    </fragment>
     <fragment
         android:id="@+id/myDealsFragment"
         android:name="com.codervai.campusdeal.screen.MyDealsFragment"
         android:label="fragment_my_deals"
-        tools:layout="@layout/fragment_my_deals" />
+        tools:layout="@layout/fragment_my_deals">
+        <argument
+            android:name="showBottomNav"
+            app:argType="boolean"
+            android:defaultValue="true"
+            />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.codervai.campusdeal.screen.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="showBottomNav"
+            app:argType="boolean"
+            android:defaultValue="true"
+            />
+    </fragment>
 </navigation>
