@@ -34,9 +34,17 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class OnBoardingFragment extends Fragment {
 
     private FragmentOnBoardingBinding mVB;
+
+    @Inject
+    FirebaseAuth fAuth;
 
     // https://developer.android.com/training/basics/intents/result
     // https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#configuration

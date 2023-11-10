@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     // Add the Google services Gradle plugin
     id 'com.google.gms.google-services'
+    // dependency injection
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -58,4 +60,10 @@ dependencies {
 
     // firebase auth sdk
     implementation 'com.google.firebase:firebase-auth:22.2.0'
+
+    // dependency injection
+    // https://developer.android.com/training/dependency-injection/hilt-android#groovy
+    // https://stackoverflow.com/a/75624885
+    implementation "com.google.dagger:hilt-android:2.44"
+    annotationProcessor "com.google.dagger:hilt-compiler:2.44"
 }

@@ -20,6 +20,9 @@ import com.codervai.campusdeal.databinding.ActivityMainBinding;
 import java.util.Map;
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements NavController.OnDestinationChangedListener {
 
     private ActivityMainBinding mVB;
