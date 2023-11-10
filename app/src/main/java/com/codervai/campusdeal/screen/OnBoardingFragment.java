@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.codervai.campusdeal.MainActivity;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.model.User;
+import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.MyDialog;
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
@@ -28,9 +30,12 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +54,9 @@ public class OnBoardingFragment extends Fragment {
     @Inject
     FirebaseAuth fAuth;
 
+    @Inject
+    FirebaseFirestore db;
+
     // https://developer.android.com/training/basics/intents/result
     // https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#configuration
     ActivityResultLauncher<Intent> signInIntentLauncher = registerForActivityResult(
@@ -63,7 +71,21 @@ public class OnBoardingFragment extends Fragment {
                         if(user!=null){
                             // create a new user and save in fire store
                             Log.d("After Sing in: ", user.getDisplayName());
-
+                            loadingDialog.showDialog("Loading...", R.id.loading_msg_tv);
+                            db.collection(Constants.USER_COLLECTION)
+                                    .document(user.getUid())
+                                    .set(new User(user))
+                                    .addOnSuccessListener(unused -> {
+                                        loadingDialog.hideDialog();
+                                        MainActivity.navigateToStartDestination(getActivity(),
+                                                R.id.action_onBoardingFragment_to_homeFragment
+                                                , R.id.homeFragment
+                                        );
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        loadingDialog.hideDialog();
+                                        Toast.makeText(getContext(), "Account creation failed",Toast.LENGTH_SHORT).show();
+                                    });
                         }else{
                             Toast.makeText(getContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
                         }
