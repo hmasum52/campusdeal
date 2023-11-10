@@ -27,6 +27,9 @@ public class UserViewModel extends ViewModel {
         this.db = db;
     }
 
+    // user profile live data
+    StateLiveData<User> userLiveData = new StateLiveData<>();
+
 
     public StateLiveData<Boolean> saveUserData(){
         StateLiveData<Boolean> saveUserDataLiveData = new StateLiveData<>();
@@ -49,5 +52,43 @@ public class UserViewModel extends ViewModel {
                     saveUserDataLiveData.postError(e);
                 });
         return saveUserDataLiveData;
+    }
+
+    // fetch user data
+    public StateLiveData<User> fetchUserProfile() {
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(fUser == null){
+            Log.d(TAG, "fetchUserProfile: user is not logged in");
+            userLiveData.postError(new Exception("User is not logged in"));
+            return userLiveData;
+        }
+
+        db.collection(Constants.USER_COLLECTION)
+                .document(fUser.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()){
+                        Log.d(TAG, "fetchUserProfile: failed to fetch user profile");
+                        userLiveData.postError(task.getException());
+                        return;
+                    }
+                    // check if the user exists
+                    if(!task.getResult().exists()){ // user does not exists
+                        Log.d(TAG, "onComplete: user does not exists. Creating new user");
+                        userLiveData.postError(new RuntimeException("User does not exists"));
+                    }else {
+                        // user exists: get user data
+                        User user = task.getResult().toObject(User.class);
+                        if(user == null){
+                            userLiveData.postError(new Exception("User is null"));
+                            return;
+                        }
+                        Log.d(TAG, "User already exists. User name is "+user.getName());
+
+                        // success
+                        userLiveData.postSuccess(user);
+                    }
+                });
+        return userLiveData;
     }
 }
