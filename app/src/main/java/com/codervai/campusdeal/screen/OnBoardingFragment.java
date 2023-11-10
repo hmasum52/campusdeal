@@ -32,10 +32,10 @@ public class OnBoardingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mVB.getStartBtn.setOnClickListener(view1 -> {
            // Toast.makeText(getContext(), "Get start", Toast.LENGTH_SHORT).show();
-            //NavHostFragment.findNavController(this)
-            //        .navigate(R.id.action_onBoardingFragment_to_homeFragment);
-            MainActivity.navigateToStartDestination(getActivity(),
-                    R.id.action_onBoardingFragment_to_homeFragment, R.id.homeFragment);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_onBoardingFragment_to_loginFragment);
+            //MainActivity.navigateToStartDestination(getActivity(),
+            //        R.id.action_onBoardingFragment_to_homeFragment, R.id.homeFragment);
         });
     }
 }

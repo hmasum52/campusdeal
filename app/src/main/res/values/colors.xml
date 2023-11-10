@@ -18,4 +18,5 @@
     <color name="c_gray500">#969899</color>
     <color name="c_orange_yellow">#F8BA00</color>
     <color name="c_green">#11FF00</color>
+    <color name="box_border">#DDE1EB</color>
 </resources>
