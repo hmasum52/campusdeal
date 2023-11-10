@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.codervai.campusdeal.MainActivity;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.util.MyDialog;
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -43,6 +44,8 @@ public class OnBoardingFragment extends Fragment {
 
     private FragmentOnBoardingBinding mVB;
 
+    private MyDialog loadingDialog;
+
     @Inject
     FirebaseAuth fAuth;
 
@@ -56,7 +59,14 @@ public class OnBoardingFragment extends Fragment {
                     //IdpResponse response = result.getIdpResponse();
                     if(result.getResultCode() == RESULT_OK){
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        Log.d("After Sing in: ", user.getDisplayName());
+                        loadingDialog.hideDialog();
+                        if(user!=null){
+                            // create a new user and save in fire store
+                            Log.d("After Sing in: ", user.getDisplayName());
+
+                        }else{
+                            Toast.makeText(getContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
+                        }
                     }else{
                         //response.getError().getErrorCode();
                     }
@@ -75,6 +85,8 @@ public class OnBoardingFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        loadingDialog = new MyDialog(getContext(), R.layout.dialog_loading);
+
         // https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
         AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
                 .Builder(R.layout.fragment_login)
@@ -108,6 +120,7 @@ public class OnBoardingFragment extends Fragment {
                         });
                 return;
             }
+            loadingDialog.showDialog("Logging in...", R.id.loading_msg_tv);
             signInIntentLauncher.launch(signInIntent);
         });
     }

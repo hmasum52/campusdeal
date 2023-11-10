@@ -15,4 +15,7 @@ public class Constants {
         add("Musical Instruments");
         add("Others");
     }};
+
+    // firebase fire store constants
+    public static final String USER_COLLECTION = "users";
 }

@@ -1,6 +1,7 @@
 package com.codervai.campusdeal.hilt;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import javax.inject.Singleton;
 
@@ -17,5 +18,11 @@ public class AppModule {
     @Singleton
     public static FirebaseAuth provideFirebaseAuth(){
         return FirebaseAuth.getInstance();
+    }
+
+    @Provides
+    @Singleton
+    public static FirebaseFirestore provideFirebaseFireStore(){
+        return FirebaseFirestore.getInstance();
     }
 }
