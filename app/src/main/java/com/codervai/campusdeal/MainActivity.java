@@ -6,9 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavArgument;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
+import androidx.navigation.NavGraph;
+import androidx.navigation.NavInflater;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
@@ -48,5 +51,16 @@ public class MainActivity extends AppCompatActivity implements NavController.OnD
         }else {
             mVB.bottomNavigation.setVisibility(View.GONE);
         }
+    }
+
+    public static void navigateToStartDestination(Activity activity, Integer transition, Integer startFragmentId){
+        NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
+        navController.navigate(transition);
+
+        // set start destination
+        NavInflater inflater = navController.getNavInflater();
+        NavGraph navGraph = inflater.inflate(R.navigation.nav_graph);
+        navGraph.setStartDestination(startFragmentId);
+        navController.setGraph(navGraph);
     }
 }
