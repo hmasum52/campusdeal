@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentHomeBinding;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.util.Constants;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -33,12 +34,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ArrayList<Fragment> fragments = new ArrayList<>();
-        for (int i = 0; i<10; i++){
+        for (int i = 0; i< Constants.CATEGORY_LIST.size(); i++){
             Fragment f = new CategoryFragment();
 
             // set args
             Bundle b = new Bundle();
-            b.putString("name", "category "+(i+1));
+            b.putString("name", Constants.CATEGORY_LIST.get(i));
             f.setArguments(b);
             fragments.add(f);
         }
@@ -48,7 +49,7 @@ public class HomeFragment extends Fragment {
         new TabLayoutMediator(mVB.tabLayout, mVB.pager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setText("c-"+(position+1));
+                tab.setText(Constants.CATEGORY_LIST.get(position));
             }
         }).attach();
     }
