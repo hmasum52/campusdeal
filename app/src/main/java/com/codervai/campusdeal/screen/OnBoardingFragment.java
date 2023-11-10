@@ -75,24 +75,7 @@ public class OnBoardingFragment extends Fragment {
                             // create a new user and save in fire store
                             Log.d("After Sing in: ", user.getDisplayName());
                             loadingDialog.showDialog("Loading...", R.id.loading_msg_tv);
-                            userVM.saveUserData()
-                                    .observe(getViewLifecycleOwner(), new Observer<StateData<Boolean>>() {
-                                        @Override
-                                        public void onChanged(StateData<Boolean> booleanStateData) {
-                                            loadingDialog.hideDialog();
-                                            switch (booleanStateData.getStatus()){
-                                                case SUCCESS:
-                                                    MainActivity.navigateToStartDestination(getActivity(),
-                                                            R.id.action_onBoardingFragment_to_homeFragment
-                                                            , R.id.homeFragment
-                                                    );
-                                                    break;
-                                                case ERROR:
-                                                    Toast.makeText(getContext(), "Account creation failed",Toast.LENGTH_SHORT).show();
-                                                    break;
-                                            }
-                                        }
-                                    });
+                            checkIfUserExists();
                         }else{
                             Toast.makeText(getContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
                         }
@@ -102,6 +85,55 @@ public class OnBoardingFragment extends Fragment {
                 }
             }
     );
+
+    public void checkIfUserExists(){
+        userVM.fetchUserProfile()
+                .observe(getViewLifecycleOwner(), new Observer<StateData<User>>() {
+                    @Override
+                    public void onChanged(StateData<User> userStateData) {
+                        loadingDialog.hideDialog();
+                        switch (userStateData.getStatus()){
+                            case SUCCESS:
+                                User user = userStateData.getData();
+                                if(user !=null && user.checkIfProfileIsComplete()){
+                                    MainActivity.navigateToStartDestination(getActivity(),
+                                            R.id.action_onBoardingFragment_to_homeFragment,
+                                            R.id.homeFragment);
+                                }else {
+                                    MainActivity.navigateToStartDestination(getActivity(),
+                                            R.id.action_onBoardingFragment_to_completeProfileFragment,
+                                            R.id.completeProfileFragment);
+                                }
+                                break;
+                            case ERROR:
+                                createNewUser();
+                                break;
+                        }
+                    }
+                });
+    }
+
+    private void createNewUser() {
+        loadingDialog.showDialog("Saving...", R.id.loading_msg_tv);
+        userVM.saveUserData()
+                .observe(getViewLifecycleOwner(), new Observer<StateData<Boolean>>() {
+                    @Override
+                    public void onChanged(StateData<Boolean> booleanStateData) {
+                        loadingDialog.hideDialog();
+                        switch (booleanStateData.getStatus()){
+                            case SUCCESS:
+                                MainActivity.navigateToStartDestination(getActivity(),
+                                        R.id.action_onBoardingFragment_to_completeProfileFragment
+                                        , R.id.completeProfileFragment
+                                );
+                                break;
+                            case ERROR:
+                                Toast.makeText(getContext(), "Account creation failed",Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                });
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

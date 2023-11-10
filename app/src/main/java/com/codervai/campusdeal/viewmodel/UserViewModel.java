@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
+import com.codervai.campusdeal.model.Campus;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateLiveData;
@@ -91,4 +92,24 @@ public class UserViewModel extends ViewModel {
                 });
         return userLiveData;
     }
+
+    public StateLiveData<Boolean> saveProfileCompleteData(String phone, Campus campus){
+        StateLiveData<Boolean> profileCompleteLiveData = new StateLiveData<>();
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        // save phone number and campus to firebase
+        db.collection(Constants.USER_COLLECTION)
+                .document(fUser.getUid())
+                .update("phone", phone, "campus", campus)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "saveProfileCompleteData: phone number and campus saved successfully");
+                    profileCompleteLiveData.postSuccess(true);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "saveProfileCompleteData: failed to save phone number and campus");
+                    profileCompleteLiveData.postError(e);
+                });
+
+        return profileCompleteLiveData;
+    }
+
 }
