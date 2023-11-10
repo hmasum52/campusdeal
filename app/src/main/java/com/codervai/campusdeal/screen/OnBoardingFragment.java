@@ -10,6 +10,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
@@ -24,6 +26,8 @@ import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.MyDialog;
+import com.codervai.campusdeal.util.StateData;
+import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -54,8 +58,7 @@ public class OnBoardingFragment extends Fragment {
     @Inject
     FirebaseAuth fAuth;
 
-    @Inject
-    FirebaseFirestore db;
+    private UserViewModel userVM;
 
     // https://developer.android.com/training/basics/intents/result
     // https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#configuration
@@ -72,19 +75,23 @@ public class OnBoardingFragment extends Fragment {
                             // create a new user and save in fire store
                             Log.d("After Sing in: ", user.getDisplayName());
                             loadingDialog.showDialog("Loading...", R.id.loading_msg_tv);
-                            db.collection(Constants.USER_COLLECTION)
-                                    .document(user.getUid())
-                                    .set(new User(user))
-                                    .addOnSuccessListener(unused -> {
-                                        loadingDialog.hideDialog();
-                                        MainActivity.navigateToStartDestination(getActivity(),
-                                                R.id.action_onBoardingFragment_to_homeFragment
-                                                , R.id.homeFragment
-                                        );
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        loadingDialog.hideDialog();
-                                        Toast.makeText(getContext(), "Account creation failed",Toast.LENGTH_SHORT).show();
+                            userVM.saveUserData()
+                                    .observe(getViewLifecycleOwner(), new Observer<StateData<Boolean>>() {
+                                        @Override
+                                        public void onChanged(StateData<Boolean> booleanStateData) {
+                                            loadingDialog.hideDialog();
+                                            switch (booleanStateData.getStatus()){
+                                                case SUCCESS:
+                                                    MainActivity.navigateToStartDestination(getActivity(),
+                                                            R.id.action_onBoardingFragment_to_homeFragment
+                                                            , R.id.homeFragment
+                                                    );
+                                                    break;
+                                                case ERROR:
+                                                    Toast.makeText(getContext(), "Account creation failed",Toast.LENGTH_SHORT).show();
+                                                    break;
+                                            }
+                                        }
                                     });
                         }else{
                             Toast.makeText(getContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
@@ -96,6 +103,11 @@ public class OnBoardingFragment extends Fragment {
             }
     );
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        userVM = new ViewModelProvider(this).get(UserViewModel.class);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
