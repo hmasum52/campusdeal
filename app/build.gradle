@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    // Add the Google services Gradle plugin
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -53,4 +55,7 @@ dependencies {
 
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+
+    // firebase auth sdk
+    implementation 'com.google.firebase:firebase-auth:22.2.0'
 }
