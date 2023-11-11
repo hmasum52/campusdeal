@@ -100,5 +100,15 @@
         <action
             android:id="@+id/action_completeProfileFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_completeProfileFragment_to_googleMapFragment"
+            app:destination="@id/googleMapFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_right" />
     </fragment>
+    <fragment
+        android:id="@+id/googleMapFragment"
+        android:name="com.codervai.campusdeal.screen.GoogleMapFragment"
+        android:label="fragment_google_map"
+        tools:layout="@layout/fragment_google_map" />
 </navigation>

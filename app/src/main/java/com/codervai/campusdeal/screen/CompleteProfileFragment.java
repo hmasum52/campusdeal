@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,13 @@ public class CompleteProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         loadingDialog = new MyDialog(getActivity(), R.layout.dialog_loading);
+
+        // locker picker text input layout click
+        mVB.locationEt.setOnClickListener(v -> {
+            // show location picker
+            // navigate to GoogleMapFragment
+            NavHostFragment.findNavController(this).navigate(R.id.action_completeProfileFragment_to_googleMapFragment);
+        });
 
         mVB.completeProfileBtn.setOnClickListener(v -> {
             if(validateInput()){
