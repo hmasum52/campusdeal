@@ -7,19 +7,17 @@ public class User {
     private String name;
     private String email;
     private String phone;
-    private String address;
     private String profileImageUrl;
     private Campus campus;
 
     public User() {
     }
 
-    public User(String uid, String name, String email, String phone, String address, String profileImageUrl, Campus campus) {
+    public User(String uid, String name, String email, String phone, String profileImageUrl, Campus campus) {
         this.uid = uid;
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.address = address;
         this.profileImageUrl = profileImageUrl;
         this.campus = campus;
     }
@@ -66,13 +64,6 @@ public class User {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     public String getProfileImageUrl() {
         return profileImageUrl;

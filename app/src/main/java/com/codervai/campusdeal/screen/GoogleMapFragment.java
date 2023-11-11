@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +18,15 @@ import android.view.ViewGroup;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentGoogleMapBinding;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.model.MyLocation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +41,8 @@ public class GoogleMapFragment extends Fragment
     private GoogleMap mMap;
 
     private Geocoder geocoder;
+
+    private MyLocation selectedLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +64,18 @@ public class GoogleMapFragment extends Fragment
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // pick location button click
+        mVB.pickLocationBtn.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            if(navController.getPreviousBackStackEntry() != null){
+                navController.getPreviousBackStackEntry()
+                        .getSavedStateHandle()
+                        .set("location", Parcels.wrap(selectedLocation));
+                // navigate to caller fragment
+                navController.popBackStack();
+            }
+        });
     }
 
     @Override
@@ -82,6 +101,7 @@ public class GoogleMapFragment extends Fragment
 
             if (addresses.size() > 0) {
                 String addressText = createFullAddress(addresses.get(0));
+                selectedLocation = new MyLocation(latLng, addressText);
                 mVB.addressTv.setText(addressText);
             }
         } catch (IOException e) {

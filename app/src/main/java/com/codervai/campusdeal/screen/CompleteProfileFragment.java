@@ -7,8 +7,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,12 @@ import com.codervai.campusdeal.MainActivity;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentCompleteProfileBinding;
 import com.codervai.campusdeal.model.Campus;
+import com.codervai.campusdeal.model.MyLocation;
 import com.codervai.campusdeal.util.MyDialog;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
+
+import org.parceler.Parcels;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,6 +37,8 @@ public class CompleteProfileFragment extends Fragment {
     private UserViewModel userVM;
 
     private MyDialog loadingDialog;
+
+    private MyLocation selectedLocation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +57,8 @@ public class CompleteProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         loadingDialog = new MyDialog(getActivity(), R.layout.dialog_loading);
 
+        parseLocationFromBackStackEntry();
+
         // locker picker text input layout click
         mVB.locationEt.setOnClickListener(v -> {
             // show location picker
@@ -64,7 +73,12 @@ public class CompleteProfileFragment extends Fragment {
 
                 String campusName = mVB.campusNameEt.getText().toString();
                 String campusType = mVB.campusTypeEt.getText().toString();
-                Campus campus = new Campus(campusName, 1, 2, "Dhaka", campusType);
+                Campus campus = new Campus(
+                        campusName,
+                        selectedLocation.getLat(),
+                        selectedLocation.getLng(),
+                        selectedLocation.getFullAddress(),
+                        campusType);
 
                 loadingDialog.showDialog("Saving...", R.id.loading_msg_tv);
                 userVM.saveProfileCompleteData(phoneNumber, campus)
@@ -83,6 +97,19 @@ public class CompleteProfileFragment extends Fragment {
                         });
             }
         });
+    }
+
+    private void parseLocationFromBackStackEntry() {
+        NavController navController = NavHostFragment.findNavController(this);
+        if(navController.getCurrentBackStackEntry() != null){
+            navController.getCurrentBackStackEntry()
+                    .getSavedStateHandle()
+                    .getLiveData("location")
+                    .observe(getViewLifecycleOwner(), parcelable -> {
+                        selectedLocation =  Parcels.unwrap((Parcelable) parcelable);
+                        mVB.locationEt.setText(selectedLocation.getFullAddress());
+                    });
+        }
     }
 
     private boolean validateInput() {
@@ -104,6 +131,11 @@ public class CompleteProfileFragment extends Fragment {
 
         if(mVB.campusTypeEt.getText().toString().isEmpty()){
             mVB.campusTypeEt.setError("Campus type is required");
+            return false;
+        }
+
+        if(selectedLocation==null){
+            mVB.locationEt.setError("Please select a location");
             return false;
         }
 
