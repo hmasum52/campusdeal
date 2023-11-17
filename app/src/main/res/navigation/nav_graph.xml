@@ -134,5 +134,11 @@
         android:id="@+id/addProductFragment"
         android:name="com.codervai.campusdeal.screen.addproduct.AddProductFragment"
         android:label="fragment_add_product"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_add_product" >
+        <action
+            android:id="@+id/action_addProductFragment_to_googleMapFragment"
+            app:destination="@id/googleMapFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:popExitAnim="@anim/to_right" />
+    </fragment>
 </navigation>

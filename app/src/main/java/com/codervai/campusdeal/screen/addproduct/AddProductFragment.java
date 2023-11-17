@@ -10,15 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentAddProductBinding;
+import com.codervai.campusdeal.model.MyLocation;
 import com.codervai.campusdeal.screen.categorybottomsheet.CategoryListBottomSheetFragment;
 import com.codervai.campusdeal.util.Constants;
+
+import org.parceler.Parcels;
 
 
 public class AddProductFragment extends Fragment {
@@ -28,6 +35,8 @@ public class AddProductFragment extends Fragment {
     public static final int MAX_IMAGE = 5;
 
     private ProductImageRVAdapter adapter;
+
+    private MyLocation selectedLocation;
 
     // pick image from gallery // https://developer.android.com/training/data-storage/shared/photopicker
     ////                // Registers a photo picker activity launcher in multi-select mode.
@@ -64,6 +73,11 @@ public class AddProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        // back button listener
+        mVB.backButtonIv.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).popBackStack();
+        });
+
         // set up product image picker recycler view
         setUpProductImageRV();
 
@@ -71,6 +85,13 @@ public class AddProductFragment extends Fragment {
         mVB.selectCategoryCard.setOnClickListener(v -> {
             addCategoryBottomSheet();
         });
+
+        // location input
+        parseLocationFromBackStackEntry();
+        mVB.locationEt.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.action_addProductFragment_to_googleMapFragment);
+        });
+
 
     }
 
@@ -103,5 +124,18 @@ public class AddProductFragment extends Fragment {
             categoryListBottomSheetFragment.dismiss();
         });
         categoryListBottomSheetFragment.show(getChildFragmentManager(), categoryListBottomSheetFragment.getTag());
+    }
+
+    private void parseLocationFromBackStackEntry() {
+        NavController navController = NavHostFragment.findNavController(this);
+        if(navController.getCurrentBackStackEntry() != null){
+            navController.getCurrentBackStackEntry()
+                    .getSavedStateHandle()
+                    .getLiveData("location")
+                    .observe(getViewLifecycleOwner(), parcelable -> {
+                        selectedLocation =  Parcels.unwrap((Parcelable) parcelable);
+                        mVB.locationEt.setText(selectedLocation.getFullAddress());
+                    });
+        }
     }
 }
