@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.codervai.campusdeal.screen.ProfileFragment"
+        android:name="com.codervai.campusdeal.screen.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <argument

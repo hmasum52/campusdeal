@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screen.ProfileFragment">
+    tools:context=".screen.profile.ProfileFragment">
 
     <TextView
         android:id="@+id/textView6"
@@ -67,6 +67,21 @@
         app:layout_constraintStart_toStartOf="@+id/username_tv"
         app:layout_constraintTop_toBottomOf="@+id/username_tv"
         tools:text="masumbuetcse18@gmail.com" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/option_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image"
+        tools:itemCount="3"
+        tools:listitem="@layout/card_profile_menu"
+        />
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sign_out_btn"

@@ -1,4 +1,4 @@
-package com.codervai.campusdeal.screen;
+package com.codervai.campusdeal.screen.profile;
 
 import android.os.Bundle;
 
@@ -85,6 +85,9 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        // set up profile menu adapter
+        setUpProfileMenu();
+
         // when sign out button clicked
         mVB.signOutBtn.setOnClickListener(v -> {
             // https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#sign-out
@@ -98,5 +101,10 @@ public class ProfileFragment extends Fragment {
                         }
                     });
         });
+    }
+
+    private void setUpProfileMenu() {
+        ProfileMenuItemAdapter adapter = new ProfileMenuItemAdapter();
+        mVB.optionListRv.setAdapter(adapter);
     }
 }
