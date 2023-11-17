@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -116,16 +117,19 @@ public class ProfileFragment extends Fragment {
                 switch (item.getTitle()){
                     case "My Ads":
                         msg = "My Ads";
+                        Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
                         break;
                     case "My Wishlist":
                         msg = "My Wishlist";
+                        Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
                         break;
                     case "Edit Profile":
-                        msg = "Edit Profile";
+                        NavHostFragment.findNavController(ProfileFragment.this)
+                                .navigate(R.id.action_profileFragment_to_editProfileFragment);
                         break;
 
                 }
-                Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
+
             }
         });
     }
