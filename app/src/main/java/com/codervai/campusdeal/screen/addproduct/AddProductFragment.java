@@ -1,6 +1,5 @@
 package com.codervai.campusdeal.screen.addproduct;
 
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -10,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -24,10 +24,14 @@ import com.codervai.campusdeal.databinding.FragmentAddProductBinding;
 import com.codervai.campusdeal.model.MyLocation;
 import com.codervai.campusdeal.screen.categorybottomsheet.CategoryListBottomSheetFragment;
 import com.codervai.campusdeal.util.Constants;
+import com.codervai.campusdeal.viewmodel.AddProductViewModel;
 
 import org.parceler.Parcels;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+
+@AndroidEntryPoint
 public class AddProductFragment extends Fragment {
 
     private FragmentAddProductBinding mVB;
@@ -37,6 +41,14 @@ public class AddProductFragment extends Fragment {
     private ProductImageRVAdapter adapter;
 
     private MyLocation selectedLocation;
+
+    private AddProductViewModel addProductViewModel;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addProductViewModel =  new ViewModelProvider(this).get(AddProductViewModel.class);
+    }
 
     // pick image from gallery // https://developer.android.com/training/data-storage/shared/photopicker
     ////                // Registers a photo picker activity launcher in multi-select mode.
@@ -57,9 +69,7 @@ public class AddProductFragment extends Fragment {
                         return;
                     }
 
-                    for (Uri u : uris) {
-                        adapter.addImage(u);
-                    }
+                    addProductViewModel.addToImageUriList(uris);
                 }
             });
 
@@ -81,10 +91,13 @@ public class AddProductFragment extends Fragment {
         // set up product image picker recycler view
         setUpProductImageRV();
 
-        // add category bottom sheet
+        // selected category card and add category bottom sheet
+        updateSelectedCategory();
         mVB.selectCategoryCard.setOnClickListener(v -> {
-            addCategoryBottomSheet();
+            openCategoryBottomSheet();
         });
+
+
 
         // location input
         parseLocationFromBackStackEntry();
@@ -93,6 +106,22 @@ public class AddProductFragment extends Fragment {
         });
 
 
+    }
+
+    private void updateSelectedCategory() {
+        // bind with view model
+        addProductViewModel.getSelectedCategoryIndex().observe(getViewLifecycleOwner(), position -> {
+            // set category name
+            mVB.selectedCategoryTv.setText(Constants.CATEGORY_LIST.get(position));
+            // set category icon
+            mVB.selectedCategoryIcon.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                            getResources(),
+                            Constants.CATEGORY_ICON_LIST.get(position),
+                            null
+                    )
+            );
+        });
     }
 
     private void setUpProductImageRV() {
@@ -105,22 +134,17 @@ public class AddProductFragment extends Fragment {
                     .build());
         });
         mVB.imageRv.setAdapter(adapter);
+
+        // set observer
+        addProductViewModel.getImageUriList().observe(getViewLifecycleOwner(), uris -> {
+            adapter.setImageUriList(uris);
+        });
     }
 
-    private void addCategoryBottomSheet() {
+    private void openCategoryBottomSheet() {
         CategoryListBottomSheetFragment categoryListBottomSheetFragment = new CategoryListBottomSheetFragment();
         categoryListBottomSheetFragment.setOnCategorySelectListener(position -> {
-            // set category name
-            mVB.selectedCategoryTv.setText(Constants.CATEGORY_LIST.get(position));
-            // set category icon
-            mVB.selectedCategoryIcon.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                            getResources(),
-                            Constants.CATEGORY_ICON_LIST.get(position),
-                            null
-                    )
-            );
-
+            addProductViewModel.setCategoryIndex(position);
             categoryListBottomSheetFragment.dismiss();
         });
         categoryListBottomSheetFragment.show(getChildFragmentManager(), categoryListBottomSheetFragment.getTag());
