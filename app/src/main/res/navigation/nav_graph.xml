@@ -118,7 +118,11 @@
         tools:layout="@layout/fragment_google_map" />
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.codervai.campusdeal.EditProfileFragment"
+        android:name="com.codervai.campusdeal.screen.profile.EditProfileFragment"
         android:label="fragment_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_googleMapFragment"
+            app:destination="@id/googleMapFragment" />
+    </fragment>
 </navigation>

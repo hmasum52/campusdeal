@@ -12,9 +12,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Map;
+import java.util.Objects;
+
 import javax.inject.Inject;
 
-import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
@@ -29,7 +31,7 @@ public class UserViewModel extends ViewModel {
     }
 
     // user profile live data
-    StateLiveData<User> userLiveData = new StateLiveData<>();
+    StateLiveData<User> userLiveData = null;
 
 
     public StateLiveData<Boolean> saveUserData(){
@@ -55,8 +57,18 @@ public class UserViewModel extends ViewModel {
         return saveUserDataLiveData;
     }
 
+    public StateLiveData<User> getUserLiveData() {
+        // check if user is logged in
+        if(userLiveData==null){
+            userLiveData = new StateLiveData<>();
+            fetchUserProfile();
+        }
+        return userLiveData;
+    }
+
     // fetch user data
     public StateLiveData<User> fetchUserProfile() {
+        userLiveData = new StateLiveData<>();
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         if(fUser == null){
             Log.d(TAG, "fetchUserProfile: user is not logged in");
@@ -93,13 +105,13 @@ public class UserViewModel extends ViewModel {
         return userLiveData;
     }
 
-    public StateLiveData<Boolean> saveProfileCompleteData(String phone, Campus campus){
+    public StateLiveData<Boolean> updateProfileData(Map<String, Object> updatedProfile){
         StateLiveData<Boolean> profileCompleteLiveData = new StateLiveData<>();
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         // save phone number and campus to firebase
         db.collection(Constants.USER_COLLECTION)
                 .document(fUser.getUid())
-                .update("phone", phone, "campus", campus)
+                .update(updatedProfile)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "saveProfileCompleteData: phone number and campus saved successfully");
                     profileCompleteLiveData.postSuccess(true);

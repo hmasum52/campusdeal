@@ -1,4 +1,4 @@
-package com.codervai.campusdeal.screen;
+package com.codervai.campusdeal.screen.profile;
 
 import android.os.Bundle;
 
@@ -19,11 +19,14 @@ import android.widget.Toast;
 import com.codervai.campusdeal.MainActivity;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentCompleteProfileBinding;
+import com.codervai.campusdeal.databinding.FragmentEditProfileBinding;
 import com.codervai.campusdeal.model.Campus;
 import com.codervai.campusdeal.model.MyLocation;
+import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.MyDialog;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.parceler.Parcels;
 
@@ -34,8 +37,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 
 @AndroidEntryPoint
-public class CompleteProfileFragment extends Fragment {
-    private FragmentCompleteProfileBinding mVB;
+public class EditProfileFragment extends Fragment {
+
+    private FragmentEditProfileBinding mVB;
 
     private UserViewModel userVM;
 
@@ -52,13 +56,20 @@ public class CompleteProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mVB = FragmentCompleteProfileBinding.inflate(inflater, container, false);
+        mVB = FragmentEditProfileBinding.inflate(inflater, container, false);
         return mVB.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        // init back button
+        mVB.backBtn.setOnClickListener(v -> {
+            getActivity().onBackPressed();
+        });
+
         loadingDialog = new MyDialog(getActivity(), R.layout.dialog_loading);
+
+        setProfileDataUI();
 
         parseLocationFromBackStackEntry();
 
@@ -66,14 +77,14 @@ public class CompleteProfileFragment extends Fragment {
         mVB.locationEt.setOnClickListener(v -> {
             // show location picker
             // navigate to GoogleMapFragment
-            NavHostFragment.findNavController(this).navigate(R.id.action_completeProfileFragment_to_googleMapFragment);
+            NavHostFragment.findNavController(this).navigate(R.id.action_editProfileFragment_to_googleMapFragment);
         });
 
-        mVB.completeProfileBtn.setOnClickListener(v -> {
+        mVB.updateProfileBtn.setOnClickListener(v -> {
             if(validateInput()){
                 // save data to firebase
+                String name = mVB.nameEt.getText().toString();
                 String phoneNumber = mVB.phoneNumberEt.getText().toString();
-
                 String campusName = mVB.campusNameEt.getText().toString();
                 String campusType = mVB.campusTypeEt.getText().toString();
                 Campus campus = new Campus(
@@ -85,6 +96,7 @@ public class CompleteProfileFragment extends Fragment {
 
                 loadingDialog.showDialog("Saving...", R.id.loading_msg_tv);
                 Map<String, Object> updatedInfo = new HashMap<>();
+                updatedInfo.put("name", name);
                 updatedInfo.put("phone", phoneNumber);
                 updatedInfo.put("campus", campus);
                 userVM.updateProfileData(updatedInfo)
@@ -93,15 +105,39 @@ public class CompleteProfileFragment extends Fragment {
                             public void onChanged(StateData<Boolean> booleanStateData) {
                                 loadingDialog.hideDialog();
                                 if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
-                                    MainActivity.navigateToStartDestination(getActivity(),
-                                            R.id.action_completeProfileFragment_to_homeFragment,
-                                            R.id.homeFragment);
+                                    Snackbar.make(mVB.getRoot(), "Profile Updated Successfully!", Snackbar.LENGTH_SHORT)
+                                            .setDuration(800).show();
+                                    NavHostFragment.findNavController(EditProfileFragment.this).popBackStack();
                                 }else{
                                     Toast.makeText(getContext(), "Error while saving profile info!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             }
+        });
+    }
+
+    private void setProfileDataUI() {
+        userVM.getUserLiveData().observe(getViewLifecycleOwner(), userStateData -> {
+            User user = userStateData.getData();
+            if(user == null){
+                Snackbar.make(mVB.getRoot(), "Error getting user data", Snackbar.LENGTH_SHORT)
+                        .setDuration(800).show();
+                return;
+            }
+            if(mVB.nameEt.getText().toString().isEmpty()){
+                mVB.nameEt.setText(user.getName());
+                mVB.phoneNumberEt.setText(user.getPhone());
+                mVB.campusNameEt.setText(user.getCampus().getName());
+                mVB.campusTypeEt.setText(user.getCampus().getType(), false);
+                mVB.locationEt.setText(user.getCampus().getFullAddress());
+
+                selectedLocation = new MyLocation(
+                        user.getCampus().getLatitude(),
+                        user.getCampus().getLongitude(),
+                        user.getCampus().getFullAddress());
+            }
+
         });
     }
 
@@ -118,7 +154,15 @@ public class CompleteProfileFragment extends Fragment {
         }
     }
 
+
     private boolean validateInput() {
+
+        // check if name is empty
+        if(mVB.nameEt.getText().toString().isEmpty()){
+            mVB.nameEt.setError("Name can't be empty");
+            return false;
+        }
+
         if(mVB.phoneNumberEt.getText().toString().isEmpty()){
             mVB.phoneNumberEt.setError("Phone number is required");
             return false;
@@ -144,7 +188,6 @@ public class CompleteProfileFragment extends Fragment {
             mVB.locationEt.setError("Please select a location");
             return false;
         }
-
 
         return true;
     }
