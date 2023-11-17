@@ -18,17 +18,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.codervai.campusdeal.MainActivity;
 import com.codervai.campusdeal.R;
-import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
 import com.codervai.campusdeal.databinding.FragmentProfileBinding;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.ProfileMenuItem;
-import com.codervai.campusdeal.util.RecyclerItemClickListener;
+import com.codervai.campusdeal.util.ItemClickListener;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -110,7 +108,7 @@ public class ProfileFragment extends Fragment {
         ProfileMenuItemAdapter adapter = new ProfileMenuItemAdapter();
         mVB.optionListRv.setAdapter(adapter);
 
-        adapter.setOnProfileMenuItemClickListener(new RecyclerItemClickListener<ProfileMenuItem>() {
+        adapter.setOnProfileMenuItemClickListener(new ItemClickListener<ProfileMenuItem>() {
             @Override
             public void onItemClick(ProfileMenuItem item) {
                 String msg = "Unknown!";

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.CardPostAdImageBinding;
-import com.codervai.campusdeal.util.RecyclerItemClickListener;
+import com.codervai.campusdeal.util.ItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,9 @@ public class ProductImageRVAdapter extends RecyclerView.Adapter<ProductImageRVAd
     }
 
 
-    private RecyclerItemClickListener<Void> onAddImageButtonClickListener;
+    private ItemClickListener<Void> onAddImageButtonClickListener;
 
-    public void setOnAddImageClickedListener(RecyclerItemClickListener<Void> onProfileMenuItemClickListener) {
+    public void setOnAddImageClickedListener(ItemClickListener<Void> onProfileMenuItemClickListener) {
         this.onAddImageButtonClickListener = onProfileMenuItemClickListener;
     }
 

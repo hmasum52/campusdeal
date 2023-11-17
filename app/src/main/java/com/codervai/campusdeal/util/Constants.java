@@ -18,6 +18,17 @@ public class Constants {
         add("Others");
     }};
 
+    // category icons
+    public  static  final List<Integer> CATEGORY_ICON_LIST = new ArrayList<Integer>() {{
+        add(R.drawable.cat_books_svgrepo_com);
+        add(R.drawable.cat_stationery_compass_svgrepo_com);
+        add(R.drawable.cat_electronic_game_console_psp_svgrepo_com);
+        add(R.drawable.cat_clothes_black_turtleneck_svgrepo_com);
+        add(R.drawable.cat_sports_man_bouncing_ball_svgrepo_com);
+        add(R.drawable.cat_musical_guitar_svgrepo_com);
+        add(R.drawable.baseline_category_24);
+    }};
+
     // make a list of profile menu options
     // options: my ads, my wishlist, edit profile
     public static final  List<ProfileMenuItem> PROFILE_MENU_OPTIONS = new ArrayList<ProfileMenuItem>() {

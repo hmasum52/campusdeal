@@ -12,13 +12,13 @@ import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.CardProfileMenuBinding;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.ProfileMenuItem;
-import com.codervai.campusdeal.util.RecyclerItemClickListener;
+import com.codervai.campusdeal.util.ItemClickListener;
 
 public class ProfileMenuItemAdapter extends RecyclerView.Adapter<ProfileMenuItemAdapter.ViewHolder> {
 
-    private RecyclerItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener;
+    private ItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener;
 
-    public void setOnProfileMenuItemClickListener(RecyclerItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener) {
+    public void setOnProfileMenuItemClickListener(ItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener) {
         this.onProfileMenuItemClickListener = onProfileMenuItemClickListener;
     }
 

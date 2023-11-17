@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.codervai.campusdeal.databinding.FragmentAddProductBinding;
+import com.codervai.campusdeal.screen.categorybottomsheet.CategoryListBottomSheetFragment;
+import com.codervai.campusdeal.util.Constants;
 
 
 public class AddProductFragment extends Fragment {
@@ -64,6 +67,11 @@ public class AddProductFragment extends Fragment {
         // set up product image picker recycler view
         setUpProductImageRV();
 
+        // add category bottom sheet
+        mVB.selectCategoryCard.setOnClickListener(v -> {
+            addCategoryBottomSheet();
+        });
+
     }
 
     private void setUpProductImageRV() {
@@ -76,5 +84,24 @@ public class AddProductFragment extends Fragment {
                     .build());
         });
         mVB.imageRv.setAdapter(adapter);
+    }
+
+    private void addCategoryBottomSheet() {
+        CategoryListBottomSheetFragment categoryListBottomSheetFragment = new CategoryListBottomSheetFragment();
+        categoryListBottomSheetFragment.setOnCategorySelectListener(position -> {
+            // set category name
+            mVB.selectedCategoryTv.setText(Constants.CATEGORY_LIST.get(position));
+            // set category icon
+            mVB.selectedCategoryIcon.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                            getResources(),
+                            Constants.CATEGORY_ICON_LIST.get(position),
+                            null
+                    )
+            );
+
+            categoryListBottomSheetFragment.dismiss();
+        });
+        categoryListBottomSheetFragment.show(getChildFragmentManager(), categoryListBottomSheetFragment.getTag());
     }
 }
