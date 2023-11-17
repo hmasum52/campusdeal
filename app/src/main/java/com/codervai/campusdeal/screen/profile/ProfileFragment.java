@@ -20,6 +20,8 @@ import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
 import com.codervai.campusdeal.databinding.FragmentProfileBinding;
 import com.codervai.campusdeal.model.User;
+import com.codervai.campusdeal.util.ProfileMenuItem;
+import com.codervai.campusdeal.util.RecyclerItemClickListener;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.firebase.ui.auth.AuthUI;
@@ -106,5 +108,25 @@ public class ProfileFragment extends Fragment {
     private void setUpProfileMenu() {
         ProfileMenuItemAdapter adapter = new ProfileMenuItemAdapter();
         mVB.optionListRv.setAdapter(adapter);
+
+        adapter.setOnProfileMenuItemClickListener(new RecyclerItemClickListener<ProfileMenuItem>() {
+            @Override
+            public void onItemClick(ProfileMenuItem item) {
+                String msg = "Unknown!";
+                switch (item.getTitle()){
+                    case "My Ads":
+                        msg = "My Ads";
+                        break;
+                    case "My Wishlist":
+                        msg = "My Wishlist";
+                        break;
+                    case "Edit Profile":
+                        msg = "Edit Profile";
+                        break;
+
+                }
+                Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

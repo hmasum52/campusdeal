@@ -12,8 +12,16 @@ import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.CardProfileMenuBinding;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.ProfileMenuItem;
+import com.codervai.campusdeal.util.RecyclerItemClickListener;
 
 public class ProfileMenuItemAdapter extends RecyclerView.Adapter<ProfileMenuItemAdapter.ViewHolder> {
+
+    private RecyclerItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener;
+
+    public void setOnProfileMenuItemClickListener(RecyclerItemClickListener<ProfileMenuItem> onProfileMenuItemClickListener) {
+        this.onProfileMenuItemClickListener = onProfileMenuItemClickListener;
+    }
+
     @NonNull
     @Override
     public ProfileMenuItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,6 +40,12 @@ public class ProfileMenuItemAdapter extends RecyclerView.Adapter<ProfileMenuItem
 
         holder.mVB.optionName.setText(item.getTitle());
         holder.mVB.optionDescription.setText(item.getDescription());
+
+        holder.itemView.setOnClickListener(v -> {
+            if(onProfileMenuItemClickListener!=null){
+                onProfileMenuItemClickListener.onItemClick(item);
+            }
+        });
     }
 
     @Override
