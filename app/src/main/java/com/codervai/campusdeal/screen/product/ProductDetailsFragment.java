@@ -38,6 +38,8 @@ public class ProductDetailsFragment extends Fragment {
 
     UserViewModel userVM;
 
+    boolean owner;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,9 @@ public class ProductDetailsFragment extends Fragment {
         double distance = Util.calculateDistance(campus, product.getProductLocation().getLatLng());
         mVB.distance.setText(String.format(Locale.getDefault(),"%.2f km", distance));
 
+        // check owner
+        owner = user.getUid().equals(product.getSellerId());
+
         // title
         mVB.title.setText(product.getTitle());
 
@@ -86,8 +91,9 @@ public class ProductDetailsFragment extends Fragment {
         showSellerInfo();
 
         enableContactButton();
-    }
 
+        enableFavoriteButton();
+    }
 
     private void showProductImages() {
         ProductImageVPAdapter adapter = new ProductImageVPAdapter();
@@ -122,6 +128,11 @@ public class ProductDetailsFragment extends Fragment {
     }
 
     private void enableContactButton() {
+        if(owner) {
+            mVB.dealActionBtn.setVisibility(View.GONE);
+            return;
+        }
+
         mVB.dealActionBtn.setOnClickListener(v -> {
             String subject = "Want to buy "+product.getTitle();
             String to = mVB.ownerEmail.getText().toString();
@@ -142,4 +153,12 @@ public class ProductDetailsFragment extends Fragment {
             startActivity(Intent.createChooser(emailIntent, "Send email..."));
         });
     }
+
+    private void enableFavoriteButton() {
+        if(owner){
+            mVB.favBtnCard.setVisibility(View.GONE);
+            return;
+        }
+    }
+
 }

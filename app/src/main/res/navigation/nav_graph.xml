@@ -35,6 +35,9 @@
             app:destination="@id/addProductFragment"
             app:enterAnim="@anim/from_bottom"
             app:popExitAnim="@anim/to_bottom" />
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"

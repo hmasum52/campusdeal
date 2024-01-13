@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +16,15 @@ import android.view.ViewGroup;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentCategoryBinding;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.screen.common.ProductListAdapter;
+import com.codervai.campusdeal.screen.common.RecyclerItemClickListener;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.ProductViewModel;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
+
+import org.parceler.Parcels;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -62,9 +67,17 @@ public class CategoryFragment extends Fragment {
                             Log.d("Category->", "No user");
                             return;
                         }
-                        ProductListAdapter adapter = new ProductListAdapter(user, false);
 
+                        RecyclerItemClickListener<Product> productRecyclerItemClickListener = product ->{
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("product", Parcels.wrap(product));
+                            NavHostFragment.findNavController(this)
+                                    .navigate(R.id.action_homeFragment_to_productDetailsFragment, bundle);
+                        };
+
+                        ProductListAdapter adapter = new ProductListAdapter(user, false);
                         mVB.allProductRv.setAdapter(adapter);
+                        adapter.setRecyclerItemClickListener(productRecyclerItemClickListener);
 
                         productVM.getProductsByCategory(user,name, -1)
                                 .observe(getViewLifecycleOwner(), productLD ->{
@@ -77,6 +90,7 @@ public class CategoryFragment extends Fragment {
                         // nearest
                         ProductListAdapter nearest = new ProductListAdapter(user, false);
                         mVB.nearestProductRv.setAdapter(nearest);
+                        nearest.setRecyclerItemClickListener(productRecyclerItemClickListener);
 
                         productVM.getNearestProductsByCategory(name)
                                 .observe(getViewLifecycleOwner(), nearestProductLD -> {
@@ -85,6 +99,7 @@ public class CategoryFragment extends Fragment {
                                         nearest.differ.submitList(nearestProductLD.getData());
                                     }
                                 });
+
                     }
                 } );
 
