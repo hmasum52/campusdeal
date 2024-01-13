@@ -66,12 +66,24 @@ public class CategoryFragment extends Fragment {
 
                         mVB.allProductRv.setAdapter(adapter);
 
-                        productVM.getProductsByCategory(name, -1)
+                        productVM.getProductsByCategory(user,name, -1)
                                 .observe(getViewLifecycleOwner(), productLD ->{
                                     if(productLD.getStatus() == StateData.DataStatus.SUCCESS){
                                         adapter.differ.submitList(productLD.getData());
                                     }
                                     mVB.loadingPb.setVisibility(View.GONE);
+                                });
+
+                        // nearest
+                        ProductListAdapter nearest = new ProductListAdapter(user, false);
+                        mVB.nearestProductRv.setAdapter(nearest);
+
+                        productVM.getNearestProductsByCategory(name)
+                                .observe(getViewLifecycleOwner(), nearestProductLD -> {
+                                    mVB.loadingPb.setVisibility(View.GONE);
+                                    if(nearestProductLD.getStatus() == StateData.DataStatus.SUCCESS){
+                                        nearest.differ.submitList(nearestProductLD.getData());
+                                    }
                                 });
                     }
                 } );

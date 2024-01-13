@@ -47,6 +47,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        mVB.pager.setUserInputEnabled(false); // disable sweeping
         loadUserData();
         ArrayList<Fragment> fragments = new ArrayList<>();
         for (int i = 0; i< Constants.CATEGORY_LIST.size(); i++){

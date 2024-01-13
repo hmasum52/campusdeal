@@ -5,8 +5,11 @@ import android.util.Log;
 import androidx.lifecycle.ViewModel;
 
 import com.codervai.campusdeal.model.Product;
+import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateLiveData;
+import com.codervai.campusdeal.util.Util;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,10 +55,13 @@ public class ProductViewModel extends ViewModel {
     }
 
     private HashMap<String, StateLiveData<List<Product>>> allProductMap = new HashMap<>();
+    private HashMap<String, StateLiveData<List<Product>>> nearestProductMap = new HashMap<>();
+    private User user;
 
-    public void fetchProductsByCategory(String category, long limit){
+    public void fetchProductsByCategory(User user, String category, long limit){
         Log.d("fetch", "category "+category);
-        String userId = FirebaseAuth.getInstance().getUid();
+        String userId = user.getUid();
+        this.user = user;
 
         Query query = db.collection(Constants.PRODUCT_COLLECTION)
                 .where(
@@ -73,17 +79,54 @@ public class ProductViewModel extends ViewModel {
             if(allProductMap.get(category) == null) allProductMap.put(category, new StateLiveData<>());
             if(task.isSuccessful()){
                 List<Product> productList = task.getResult().toObjects(Product.class);
+                determineNearestProducts(productList);
                 allProductMap.get(category).postSuccess(productList);
             }else{
                 Log.d("fetch->", task.getException().getMessage());
                 allProductMap.get(category).postError(new Exception("Error fetching products"));
+                nearestProductMap.get(category).postError(new Exception("Error fetching products"));
             }
         });
     }
 
-    public StateLiveData<List<Product>> getProductsByCategory(String category, long limit){
+    private void determineNearestProducts(List<Product> productList) {
+        if(productList.size()<1) {
+            return;
+        }
+
+        int radius = 2; // km
+        LatLng latLng = new LatLng(user.getCampus().getLatitude(),user.getCampus().getLongitude());
+
+        List<Product> nearestProducts = new ArrayList<>();
+
+        productList.stream()
+                .sorted((o1, o2) -> {
+                        double distance1 = Util.calculateDistance(latLng, o1.getProductLocation().getLatLng());
+                        double distance2 = Util.calculateDistance(latLng, o2.getProductLocation().getLatLng());
+                        return Double.compare(distance1, distance2);
+                    })
+                .filter( product -> {
+                    double distance = Util.calculateDistance(latLng, product.getProductLocation().getLatLng());
+                    return distance <= radius;
+                })
+                .forEach(product -> {
+                    nearestProducts.add(product);
+                });
+
+        String category = productList.get(0).getCategory();
+        if(nearestProductMap.get(category) == null)
+            nearestProductMap.put(category, new StateLiveData<>());
+        nearestProductMap.get(category).postSuccess(nearestProducts);
+    }
+
+    public StateLiveData<List<Product>> getProductsByCategory(User user, String category, long limit){
         allProductMap.put(category, new StateLiveData<>());
-        fetchProductsByCategory(category, limit);
+        nearestProductMap.put(category, new StateLiveData<>());
+        fetchProductsByCategory(user, category, limit);
         return allProductMap.get(category);
+    }
+
+    public StateLiveData<List<Product>> getNearestProductsByCategory(String category){
+        return nearestProductMap.get(category);
     }
 }
