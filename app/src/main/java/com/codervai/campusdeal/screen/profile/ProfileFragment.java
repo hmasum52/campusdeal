@@ -120,8 +120,8 @@ public class ProfileFragment extends Fragment {
                                 .navigate(R.id.action_profileFragment_to_myProductsFragment);
                         break;
                     case "My Wishlist":
-                        msg = "My Wishlist";
-                        Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
+                        NavHostFragment.findNavController(ProfileFragment.this)
+                                .navigate(R.id.action_profileFragment_to_myWishlistFragment);
                         break;
                     case "Edit Profile":
                         NavHostFragment.findNavController(ProfileFragment.this)

@@ -6,4 +6,5 @@
     <string name="logo_txt"><font color="#00c1a2">Campus</font>Deal</string>
     <string name="select_category">Select Category</string>
     <string name="my_products">My Products</string>
+    <string name="my_wishlist">My wishtlist</string>
 </resources>

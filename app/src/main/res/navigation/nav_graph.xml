@@ -81,6 +81,9 @@
             app:destination="@id/myProductsFragment"
             app:enterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_right" />
+        <action
+            android:id="@+id/action_profileFragment_to_myWishlistFragment"
+            app:destination="@id/myWishlistFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -165,4 +168,13 @@
         android:name="com.codervai.campusdeal.screen.product.ProductDetailsFragment"
         android:label="fragment_product_details"
         tools:layout="@layout/fragment_product_details" />
+    <fragment
+        android:id="@+id/myWishlistFragment"
+        android:name="com.codervai.campusdeal.screen.profile.MyWishlistFragment"
+        android:label="fragment_my_wishlist"
+        tools:layout="@layout/fragment_my_wishlist" >
+        <action
+            android:id="@+id/action_myWishlistFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
 </navigation>
