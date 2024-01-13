@@ -17,22 +17,36 @@ import com.bumptech.glide.Glide;
 import com.codervai.campusdeal.databinding.FragmentProductDetailsBinding;
 import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
+import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.util.Util;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.parceler.Parcels;
 
 import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ProductDetailsFragment extends Fragment {
     FragmentProductDetailsBinding mVB;
+
+    @Inject
+    FirebaseFirestore db;
 
     Product product;
 
@@ -92,7 +106,7 @@ public class ProductDetailsFragment extends Fragment {
 
         enableContactButton();
 
-        enableFavoriteButton();
+        enableFavoriteButton(user);
     }
 
     private void showProductImages() {
@@ -154,11 +168,63 @@ public class ProductDetailsFragment extends Fragment {
         });
     }
 
-    private void enableFavoriteButton() {
+    private void enableFavoriteButton(User user) {
         if(owner){
             mVB.favBtnCard.setVisibility(View.GONE);
             return;
         }
+
+        // users/{userId}/wishlist/{productId}
+       DocumentReference dRef = db.collection(Constants.USER_COLLECTION)
+                .document(user.getUid())
+                        .collection(Constants.WISHLIST_COLLECTION)
+                                .document(product.getId());
+
+        // init selected sate
+        dRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    mVB.favouriteBtn.setSelected(documentSnapshot.exists());
+                })
+                        .addOnFailureListener(e -> {
+                            mVB.favouriteBtn.setSelected(false);
+                        });
+
+        // init button
+        mVB.favBtnCard.setOnClickListener(v -> {
+            if(mVB.favouriteBtn.isSelected()){
+                mVB.favouriteBtn.setSelected(false);
+                removeFromWishList(dRef);
+            }else{
+                mVB.favouriteBtn.setSelected(true);
+                addToWishList(dRef);
+            }
+        });
+    }
+
+    private void addToWishList(DocumentReference dRef) {
+        // wishlist object
+        Map<String, Object> wishlistData = new HashMap<>();
+        wishlistData.put("productId", product.getId());
+        wishlistData.put("title", product.getTitle());
+        wishlistData.put("date", new Date());
+
+        dRef.set(wishlistData)
+                .addOnSuccessListener(aVoid ->{
+                    Snackbar.make(mVB.getRoot(), "Added to wishlist", Snackbar.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(aVoid ->{
+                    Snackbar.make(mVB.getRoot(), "Failed to add to wishlist", Snackbar.LENGTH_SHORT).show();
+                });
+    }
+
+    private void removeFromWishList(DocumentReference dRef) {
+        dRef.delete()
+                .addOnSuccessListener(unused -> {
+                    Snackbar.make(mVB.getRoot(), "Removed from wishlist", Snackbar.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Snackbar.make(mVB.getRoot(), "Failed to remove from wishlist. Something went wrong!", Snackbar.LENGTH_SHORT).show();
+                });
     }
 
 }
