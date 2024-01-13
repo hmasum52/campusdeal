@@ -1,5 +1,7 @@
 package com.codervai.campusdeal.screen.product;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +84,10 @@ public class ProductDetailsFragment extends Fragment {
 
         // seller info
         showSellerInfo();
+
+        enableContactButton();
     }
+
 
     private void showProductImages() {
         ProductImageVPAdapter adapter = new ProductImageVPAdapter();
@@ -114,5 +119,27 @@ public class ProductDetailsFragment extends Fragment {
                         else mVB.avatarText.setText(user.getName().substring(0,1));
                     }
                 });
+    }
+
+    private void enableContactButton() {
+        mVB.dealActionBtn.setOnClickListener(v -> {
+            String subject = "Want to buy "+product.getTitle();
+            String to = mVB.ownerEmail.getText().toString();
+            String body =  "Hi, I am interested in your product "
+                    +product.getTitle()+
+                    " on CampusDeal App.";
+
+            String[] addresses = {to};
+
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            emailIntent.setData(Uri.parse("mailto:"));
+            emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, addresses);
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+
+            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        });
     }
 }
