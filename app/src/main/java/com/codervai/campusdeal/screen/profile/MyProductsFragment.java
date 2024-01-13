@@ -78,7 +78,7 @@ public class MyProductsFragment extends Fragment{
             return;
         }
 
-        ProductListAdapter adapter = new ProductListAdapter(user);
+        ProductListAdapter adapter = new ProductListAdapter(user, true);
         mVB.adListRv.setAdapter(adapter);
 
         adapter.setRecyclerItemClickListener(product -> {

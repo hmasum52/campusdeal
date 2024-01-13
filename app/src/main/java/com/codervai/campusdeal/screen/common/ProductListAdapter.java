@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codervai.campusdeal.R;
+import com.codervai.campusdeal.databinding.CardProductBinding;
 import com.codervai.campusdeal.databinding.CardProductHorizontalBinding;
 import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
@@ -37,9 +38,11 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     };
 
     private User user;
+    boolean layout_horizontal;
 
-    public ProductListAdapter(User user){
+    public ProductListAdapter(User user, boolean layout_horizontal){
         this.user = user;
+        this.layout_horizontal = layout_horizontal;
     }
 
     // a list of Products
@@ -54,8 +57,10 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     @NonNull
     @Override
     public ProductListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_product_horizontal, parent, false);
-        return new ViewHolder(view);
+        int layout_id = layout_horizontal ? R.layout.card_product_horizontal : R.layout.card_product;
+        View view = LayoutInflater.from(parent.getContext()).inflate(layout_id, parent, false);
+        ViewHolder viewHolder = layout_horizontal ? new ViewHolderHorizontal(view) : new ViewHolder(view);
+        return viewHolder;
     }
 
     @Override
@@ -114,9 +119,18 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        CardProductHorizontalBinding mVB;
+        CardProductBinding mVB;
 
         public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mVB = CardProductBinding.bind(itemView);
+        }
+    }
+
+    public static class ViewHolderHorizontal extends ViewHolder{
+        CardProductHorizontalBinding mVB;
+
+        public ViewHolderHorizontal(@NonNull View itemView) {
             super(itemView);
             mVB = CardProductHorizontalBinding.bind(itemView);
         }

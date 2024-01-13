@@ -5,7 +5,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +15,23 @@ import android.view.ViewGroup;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentCategoryBinding;
 import com.codervai.campusdeal.databinding.FragmentOnBoardingBinding;
+import com.codervai.campusdeal.model.User;
+import com.codervai.campusdeal.screen.common.ProductListAdapter;
+import com.codervai.campusdeal.util.StateData;
+import com.codervai.campusdeal.viewmodel.ProductViewModel;
+import com.codervai.campusdeal.viewmodel.UserViewModel;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class CategoryFragment extends Fragment {
 
     private FragmentCategoryBinding mVB;
 
     private String name; // category name passed argument
 
-    public CategoryFragment() {
-        // Required empty public constructor
-    }
+    ProductViewModel productVM;
+    UserViewModel userVM;
 
 
     @Override
@@ -31,6 +40,8 @@ public class CategoryFragment extends Fragment {
         if (getArguments() != null) {
            name = getArguments().getString("name");
         }
+        productVM = new ViewModelProvider(this).get(ProductViewModel.class);
+        userVM = new ViewModelProvider(this).get(UserViewModel.class);
     }
 
     @Override
@@ -43,6 +54,27 @@ public class CategoryFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mVB.categoryTest.setText(name);
+        userVM.getUserLiveData()
+                .observe(getViewLifecycleOwner(),userStateData -> {
+                    if(userStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                        User user = userStateData.getData();
+                        if(user == null){
+                            Log.d("Category->", "No user");
+                            return;
+                        }
+                        ProductListAdapter adapter = new ProductListAdapter(user, false);
+
+                        mVB.allProductRv.setAdapter(adapter);
+
+                        productVM.getProductsByCategory(name, -1)
+                                .observe(getViewLifecycleOwner(), productLD ->{
+                                    if(productLD.getStatus() == StateData.DataStatus.SUCCESS){
+                                        adapter.differ.submitList(productLD.getData());
+                                    }
+                                    mVB.loadingPb.setVisibility(View.GONE);
+                                });
+                    }
+                } );
+
     }
 }
