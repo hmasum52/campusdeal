@@ -19,6 +19,7 @@ import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.util.Util;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.parceler.Parcels;
 
@@ -58,6 +59,9 @@ public class ProductDetailsFragment extends Fragment {
             NavHostFragment.findNavController(this).popBackStack();
         });
 
+        // product image
+        showProductImages();
+
         // upload date in dd MMM yyyy format
         mVB.uploadDate.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(product.getUploadDate()));
 
@@ -78,6 +82,17 @@ public class ProductDetailsFragment extends Fragment {
 
         // seller info
         showSellerInfo();
+    }
+
+    private void showProductImages() {
+        ProductImageVPAdapter adapter = new ProductImageVPAdapter();
+        mVB.imageVp.setAdapter(adapter);
+        adapter.differ.submitList(product.getImageUriList());
+
+        // add dot indicator to view pager
+        // https://github.com/AdrianKuta/ViewPagerDotsIndicator
+        new TabLayoutMediator(mVB.dotIndicator, mVB.imageVp, (tab, position) -> {
+        }).attach();
     }
 
     private void showSellerInfo() {
