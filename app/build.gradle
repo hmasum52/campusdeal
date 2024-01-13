@@ -83,4 +83,7 @@ dependencies {
     // https://github.com/johncarl81/parceler
     implementation 'org.parceler:parceler-api:1.1.12'
     annotationProcessor 'org.parceler:parceler:1.1.12'
+
+    // for uploading product images
+    implementation 'com.google.firebase:firebase-storage:20.3.0'
 }

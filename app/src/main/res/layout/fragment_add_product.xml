@@ -152,7 +152,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:text="Select Category" />
+                    android:text="@string/select_category" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

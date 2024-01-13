@@ -2,6 +2,7 @@ package com.codervai.campusdeal.hilt;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 import javax.inject.Singleton;
 
@@ -24,5 +25,12 @@ public class AppModule {
     @Singleton
     public static FirebaseFirestore provideFirebaseFireStore(){
         return FirebaseFirestore.getInstance();
+    }
+
+    // firebase storage provider
+    @Provides
+    @Singleton
+    public static FirebaseStorage provideFirebaseStorage(){
+        return FirebaseStorage.getInstance();
     }
 }

@@ -41,4 +41,5 @@ public class Constants {
 
     // firebase fire store constants
     public static final String USER_COLLECTION = "users";
+    public static final String PRODUCT_COLLECTION = "products";
 }
