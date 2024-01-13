@@ -36,4 +36,18 @@ public class Util {
             return diffYears+" years ago";
         }
     }
+
+        /// return distance in km
+    // https://stackoverflow.com/a/17983974/13877490
+    public static double calculateDistance(LatLng fromLatLng, LatLng toLatLng){
+        Location fromLocation = new Location("");
+        fromLocation.setLatitude(fromLatLng.latitude);
+        fromLocation.setLongitude(fromLatLng.longitude);
+
+        Location toLocation = new Location("");
+        toLocation.setLatitude(toLatLng.latitude);
+        toLocation.setLongitude(toLatLng.longitude);
+
+        return fromLocation.distanceTo(toLocation)/1000.0;
+    }
 }

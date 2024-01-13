@@ -33,6 +33,18 @@ public class UserViewModel extends ViewModel {
     // user profile live data
     StateLiveData<User> userLiveData = null;
 
+    // get user
+    public User getUser(){
+        if(userLiveData==null){
+            userLiveData = new StateLiveData<>();
+            fetchUserProfile();
+        }
+        if (userLiveData.getValue() == null) {
+            return null;
+        }
+        return userLiveData.getValue().getData();
+    }
+
 
     public StateLiveData<Boolean> saveUserData(){
         StateLiveData<Boolean> saveUserDataLiveData = new StateLiveData<>();

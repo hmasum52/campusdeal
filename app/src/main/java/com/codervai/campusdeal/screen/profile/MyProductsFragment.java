@@ -16,11 +16,13 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.codervai.campusdeal.databinding.FragmentMyProductsBinding;
 import com.codervai.campusdeal.model.Product;
 //import com.codervai.campusdeal.screen.common.ProductListAdapter;
+import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.screen.common.ProductListAdapter;
 import com.codervai.campusdeal.screen.common.RecyclerItemClickListener;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.viewmodel.AddProductViewModel;
 import com.codervai.campusdeal.viewmodel.ProductViewModel;
+import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -43,10 +45,13 @@ public class MyProductsFragment extends Fragment{
     @Inject
     FirebaseAuth fAuth;
 
+    UserViewModel userVM;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         productVM =  new ViewModelProvider(this).get(ProductViewModel.class);
+        userVM = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
     }
 
     @Nullable
@@ -60,8 +65,19 @@ public class MyProductsFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mVB.noItemPlaceholder.getRoot().setVisibility(View.GONE);
+        // back button
+        mVB.backBtn.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).popBackStack();
+        });
 
-        ProductListAdapter adapter = new ProductListAdapter();
+
+        User user = userVM.getUser();
+        if(user==null){
+            updateNoItemUI();
+            return;
+        }
+
+        ProductListAdapter adapter = new ProductListAdapter(user);
         mVB.adListRv.setAdapter(adapter);
 
         adapter.setRecyclerItemClickListener(product -> {
@@ -88,11 +104,6 @@ public class MyProductsFragment extends Fragment{
                         updateNoItemUI();
                     }
                 });
-
-        // back button
-        mVB.backBtn.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).popBackStack();
-        });
 
     }
 

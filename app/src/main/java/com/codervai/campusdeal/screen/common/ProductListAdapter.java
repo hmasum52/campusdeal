@@ -13,7 +13,11 @@ import com.bumptech.glide.Glide;
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.CardProductHorizontalBinding;
 import com.codervai.campusdeal.model.Product;
+import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Util;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Locale;
 
 
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ViewHolder>{
@@ -31,6 +35,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             return oldItem.equals(newItem);
         }
     };
+
+    private User user;
+
+    public ProductListAdapter(User user){
+        this.user = user;
+    }
 
     // a list of Products
     public AsyncListDiffer<Product> differ = new AsyncListDiffer<>(this, diffCallback);
@@ -79,6 +89,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         holder.mVB.ownerNameTv.setText(product.getSellerName());
 
         // set distance
+        if(user!=null){
+            LatLng campus = new LatLng(user.getCampus().getLatitude(), user.getCampus().getLongitude());
+            double distance = Util.calculateDistance(campus, product.getProductLocation().getLatLng());
+
+            holder.mVB.distanceTv.setText(String.format(Locale.getDefault(),"%.2f km", distance));
+        }
 
         // set upload date
         String timeAlgo = Util.calculateTimeAgo(product.getUploadDate());

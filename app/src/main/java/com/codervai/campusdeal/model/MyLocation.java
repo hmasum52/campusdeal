@@ -44,6 +44,10 @@ public class MyLocation {
         this.lng = lng;
     }
 
+    // get latlng object
+    public LatLng getLatLng(){
+        return new LatLng(lat,lng);
+    }
 
     public String getAdminArea() {
         return adminArea;

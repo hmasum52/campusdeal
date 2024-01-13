@@ -79,7 +79,7 @@
 
 
         <ImageView
-            android:visibility="gone"
+            android:visibility="visible"
             android:id="@+id/imageView3"
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -88,7 +88,8 @@
             app:srcCompat="@drawable/ic_distance_svgrepo_com" />
 
         <TextView
-            android:visibility="gone"
+            android:paddingEnd="4dp"
+            android:visibility="visible"
             android:id="@+id/distance_tv"
             style="@style/TextAppearance.Material3.BodySmall"
             android:layout_width="wrap_content"
@@ -103,6 +104,7 @@
             android:id="@+id/imageView4"
             android:layout_width="15dp"
             android:layout_height="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/distance_tv"
             app:layout_constraintStart_toEndOf="@+id/distance_tv"
             app:layout_constraintTop_toBottomOf="@+id/owner_name_tv"
             app:srcCompat="@drawable/ic_clock_outlined" />
