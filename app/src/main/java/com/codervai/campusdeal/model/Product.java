@@ -136,4 +136,12 @@ public class Product {
     public void setProductLocation(MyLocation productLocation) {
         this.productLocation = productLocation;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) return false;
+        if(!(obj instanceof Product)) return false;
+        Product product = (Product) obj;
+        return this.id.equals(product.getId());
+    }
 }

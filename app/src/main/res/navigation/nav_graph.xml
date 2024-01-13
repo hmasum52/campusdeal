@@ -73,6 +73,11 @@
             app:destination="@id/editProfileFragment"
             app:enterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_right" />
+        <action
+            android:id="@+id/action_profileFragment_to_myProductsFragment"
+            app:destination="@id/myProductsFragment"
+            app:enterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -141,4 +146,9 @@
             app:enterAnim="@anim/from_bottom"
             app:popExitAnim="@anim/to_right" />
     </fragment>
+    <fragment
+        android:id="@+id/myProductsFragment"
+        android:name="com.codervai.campusdeal.screen.profile.MyProductsFragment"
+        android:label="fragment_my_products"
+        tools:layout="@layout/fragment_my_products" />
 </navigation>

@@ -113,9 +113,11 @@ public class ProfileFragment extends Fragment {
             public void onItemClick(ProfileMenuItem item) {
                 String msg = "Unknown!";
                 switch (item.getTitle()){
-                    case "My Ads":
-                        msg = "My Ads";
-                        Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
+                    case "My Products":
+                        msg = "My Products";
+                        //Toast.makeText(getContext(), msg,Toast.LENGTH_SHORT).show();
+                        NavHostFragment.findNavController(ProfileFragment.this)
+                                .navigate(R.id.action_profileFragment_to_myProductsFragment);
                         break;
                     case "My Wishlist":
                         msg = "My Wishlist";

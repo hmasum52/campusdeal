@@ -100,8 +100,9 @@ public class GoogleMapFragment extends Fragment
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
 
             if (addresses.size() > 0) {
-                String addressText = createFullAddress(addresses.get(0));
-                selectedLocation = new MyLocation(latLng, addressText);
+                Address address = addresses.get(0);
+                String addressText = createFullAddress(address);
+                selectedLocation = new MyLocation(latLng, address.getAdminArea(),addressText);
                 mVB.addressTv.setText(addressText);
             }
         } catch (IOException e) {

@@ -33,7 +33,7 @@ public class Constants {
     // options: my ads, my wishlist, edit profile
     public static final  List<ProfileMenuItem> PROFILE_MENU_OPTIONS = new ArrayList<ProfileMenuItem>() {
         {
-            add(new ProfileMenuItem("My Ads", R.drawable.price_tag_rotate_svgrepo_com, "View your ads"));
+            add(new ProfileMenuItem("My Products", R.drawable.price_tag_rotate_svgrepo_com, "View your ads"));
             add(new ProfileMenuItem("My Wishlist", R.drawable.baseline_favorite_24, "View your wishlist"));
             add(new ProfileMenuItem("Edit Profile", R.drawable.baseline_edit_24, "Edit your profile"));
         }

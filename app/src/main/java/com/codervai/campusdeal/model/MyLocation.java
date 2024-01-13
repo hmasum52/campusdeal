@@ -8,14 +8,17 @@ import org.parceler.Parcel;
 public class MyLocation {
     private double lat;
     private double lng;
+
+    private String adminArea;
     private String fullAddress;
 
     public MyLocation() {
     }
 
-    public MyLocation(LatLng latLng, String fullAddress) {
+    public MyLocation(LatLng latLng,String adminArea, String fullAddress) {
         this.lat = latLng.latitude;
         this.lng = latLng.longitude;
+        this.adminArea = adminArea;
         this.fullAddress = fullAddress;
     }
 
@@ -39,6 +42,15 @@ public class MyLocation {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+
+    public String getAdminArea() {
+        return adminArea;
+    }
+
+    public void setAdminArea(String adminArea) {
+        this.adminArea = adminArea;
     }
 
     public String getFullAddress() {
