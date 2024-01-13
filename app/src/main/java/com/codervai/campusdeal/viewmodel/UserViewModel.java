@@ -117,6 +117,39 @@ public class UserViewModel extends ViewModel {
         return userLiveData;
     }
 
+
+    // fetch user data
+    public StateLiveData<User> fetchUserProfile(String userId) {
+        StateLiveData<User> userLD = new StateLiveData<>();
+        db.collection(Constants.USER_COLLECTION)
+                .document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()){
+                        Log.d(TAG, "fetchUserProfile: failed to fetch user profile");
+                        userLD.postError(task.getException());
+                        return;
+                    }
+                    // check if the user exists
+                    if(!task.getResult().exists()){ // user does not exists
+                        Log.d(TAG, "onComplete: user does not exists. Creating new user");
+                        userLD.postError(new RuntimeException("User does not exists"));
+                    }else {
+                        // user exists: get user data
+                        User user = task.getResult().toObject(User.class);
+                        if(user == null){
+                            userLD.postError(new Exception("User is null"));
+                            return;
+                        }
+                        Log.d(TAG, "User already exists. User name is "+user.getName());
+
+                        // success
+                        userLD.postSuccess(user);
+                    }
+                });
+        return userLD;
+    }
+
     public StateLiveData<Boolean> updateProfileData(Map<String, Object> updatedProfile){
         StateLiveData<Boolean> profileCompleteLiveData = new StateLiveData<>();
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();

@@ -150,5 +150,16 @@
         android:id="@+id/myProductsFragment"
         android:name="com.codervai.campusdeal.screen.profile.MyProductsFragment"
         android:label="fragment_my_products"
-        tools:layout="@layout/fragment_my_products" />
+        tools:layout="@layout/fragment_my_products" >
+        <action
+            android:id="@+id/action_myProductsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.codervai.campusdeal.screen.product.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" />
 </navigation>

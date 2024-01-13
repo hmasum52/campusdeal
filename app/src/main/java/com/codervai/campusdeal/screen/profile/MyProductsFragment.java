@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentMyProductsBinding;
 import com.codervai.campusdeal.model.Product;
 //import com.codervai.campusdeal.screen.common.ProductListAdapter;
@@ -81,7 +82,10 @@ public class MyProductsFragment extends Fragment{
         mVB.adListRv.setAdapter(adapter);
 
         adapter.setRecyclerItemClickListener(product -> {
-            Toast.makeText(getContext(), product.getTitle(), Toast.LENGTH_SHORT).show();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("product", Parcels.wrap(product));
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_myProductsFragment_to_productDetailsFragment, bundle);
         });
 
         // fetch data
