@@ -75,6 +75,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadUserData() {
-        userVM.getUser();
+        userVM.fetchUserProfile();
     }
 }

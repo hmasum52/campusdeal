@@ -49,4 +49,38 @@ public class DealViewModel extends ViewModel {
 
         return  addDealRequestLiveData;
     }
+
+    public StateLiveData<DealRequest> getDealRequest(String productId){
+        StateLiveData<DealRequest> dealRequestLiveData = new StateLiveData<>();
+
+        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                .document(productId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        dealRequestLiveData.postSuccess(documentSnapshot.toObject(DealRequest.class));
+                    }else{
+                        dealRequestLiveData.postError(new Exception("deal request not found"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    dealRequestLiveData.postError(new Exception("deal request not found"));
+                });
+
+        return dealRequestLiveData;
+    }
+
+    public StateLiveData<Boolean> cancelDealRequest(String productId){
+        StateLiveData<Boolean> cancelDealRequestLiveData = new StateLiveData<>();
+
+        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                .document(productId)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    cancelDealRequestLiveData.postSuccess(true);
+                })
+                .addOnFailureListener(cancelDealRequestLiveData::postError);
+
+        return cancelDealRequestLiveData;
+    }
 }

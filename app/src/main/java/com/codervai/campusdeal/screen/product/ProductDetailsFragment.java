@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.codervai.campusdeal.databinding.FragmentProductDetailsBinding;
+import com.codervai.campusdeal.model.DealRequest;
 import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
@@ -45,6 +46,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ProductDetailsFragment extends Fragment {
+    public static final String MAKE_REQUEST = "Make Request";
+    public static final String CANCEL_REQUEST = "Cancel Request";
+    public static final String ACCEPT = "Accept";
+
     FragmentProductDetailsBinding mVB;
 
     @Inject
@@ -243,20 +248,52 @@ public class ProductDetailsFragment extends Fragment {
             return;
         }
 
-        mVB.dealActionBtn.setText("Make Request");
-
-        mVB.dealActionBtn.setOnClickListener(v -> {
-
-            // make deal request
-            dealVM.addDealRequest(userVM.getUser(), product)
-                    .observe(getViewLifecycleOwner(), booleanStateData -> {
-                        if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
-                            Snackbar.make(mVB.getRoot(), "Request sent", Snackbar.LENGTH_SHORT).show();
-                            // disable request button
+        dealVM.getDealRequest(product.getId())
+                    .observe(getViewLifecycleOwner(), dealRequestStateData -> {
+                        if(dealRequestStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                            DealRequest dealRequest = dealRequestStateData.getData();
+                            if (dealRequest != null ) {
+                                // check if user is buyer
+                                if(dealRequest.getBuyerId().equals(userVM.getUser().getUid())){
+                                    mVB.dealActionBtn.setText(CANCEL_REQUEST);
+                                    return;
+                                }
+                            }
+                            // change button text
                             mVB.dealActionBtn.setEnabled(false);
+                            mVB.dealActionBtn.setText("Reserved");
+                        }else{
+                            mVB.dealActionBtn.setText(MAKE_REQUEST);
                         }
                     });
+
+        mVB.dealActionBtn.setOnClickListener(v -> {
+            String buttonText = mVB.dealActionBtn.getText().toString().trim();
+
+            if(buttonText.equals(MAKE_REQUEST)){
+                // make deal request
+                dealVM.addDealRequest(userVM.getUser(), product)
+                        .observe(getViewLifecycleOwner(), booleanStateData -> {
+                            if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                                Snackbar.make(mVB.getRoot(), "Request sent", Snackbar.LENGTH_SHORT).show();
+                                mVB.dealActionBtn.setText(CANCEL_REQUEST);
+                            }
+                        });
+            }else if(buttonText.equals(CANCEL_REQUEST)){
+                // cancel the request
+                dealVM.cancelDealRequest(product.getId())
+                        .observe(getViewLifecycleOwner(), booleanStateData -> {
+                            if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                                Snackbar.make(mVB.getRoot(), "Request cancelled", Snackbar.LENGTH_SHORT).show();
+                                mVB.dealActionBtn.setText(MAKE_REQUEST);
+                            }
+                        });
+            }else{
+                mVB.dealActionBtn.setEnabled(false);
+            }
+
         });
+
     }
 
 }
