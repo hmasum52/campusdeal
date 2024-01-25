@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/myDealsFragment"
-        android:name="com.codervai.campusdeal.screen.MyDealsFragment"
+        android:name="com.codervai.campusdeal.screen.deals.MyDealsFragment"
         android:label="fragment_my_deals"
         tools:layout="@layout/fragment_my_deals">
         <argument
@@ -63,6 +63,9 @@
             app:argType="boolean"
             android:defaultValue="true"
             />
+        <action
+            android:id="@+id/action_myDealsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

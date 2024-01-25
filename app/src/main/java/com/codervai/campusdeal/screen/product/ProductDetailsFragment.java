@@ -156,6 +156,7 @@ public class ProductDetailsFragment extends Fragment {
     private void enableContactButton() {
         if(owner) {
             mVB.dealActionBtn.setVisibility(View.GONE);
+            mVB.contact.setVisibility(View.GONE);
             return;
         }
 

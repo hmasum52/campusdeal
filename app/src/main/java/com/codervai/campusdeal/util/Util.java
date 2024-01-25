@@ -50,4 +50,17 @@ public class Util {
 
         return fromLocation.distanceTo(toLocation)/1000.0;
     }
+
+    public static int getViewPagerFragmentIndex(Fragment fragment, int numberOfFragment){
+        //get fragment tag set by the view pager
+        // https://stackoverflow.com/questions/55728719/get-current-fragment-with-viewpager2
+        int startIndex = fragment.toString().indexOf("tag=") + 4; // Start index of the tag value
+        if(startIndex<0) return -1;
+        int endIndex = fragment.toString().indexOf(")", startIndex); // End index of the tag value
+        String fragmentTag = fragment.toString().substring(startIndex, endIndex);
+        Log.d("Util.getViewPagerFragmentIndex", "onViewCreated: fragment tag = "+fragmentTag);
+        int index = Integer.parseInt(fragmentTag.substring(1));
+        if(index<0 || index>=numberOfFragment) return -1;
+        return index;
+    }
 }

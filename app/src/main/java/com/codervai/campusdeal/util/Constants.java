@@ -18,6 +18,15 @@ public class Constants {
         add("Others");
     }};
 
+    public static final List<String> DEALS_TAB_MENU_LIST = new ArrayList<String>() {
+        {
+            add("Request for me"); // deal_request/<adId>
+            add("My request");
+            add("My purchase"); // users/<uid>/deals
+            add("My sell"); // users/<uid>/buy_history
+        }
+    };
+
     // category icons
     public  static  final List<Integer> CATEGORY_ICON_LIST = new ArrayList<Integer>() {{
         add(R.drawable.cat_books_svgrepo_com);

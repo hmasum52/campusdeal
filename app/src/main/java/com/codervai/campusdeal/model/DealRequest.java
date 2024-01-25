@@ -1,5 +1,7 @@
 package com.codervai.campusdeal.model;
 
+import androidx.annotation.Nullable;
+
 import org.parceler.Parcel;
 
 import java.util.Date;
@@ -81,5 +83,14 @@ public class DealRequest {
 
     public Date getDate() {
         return date;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == null) return false;
+        if(!(obj instanceof DealRequest)) return false;
+
+        DealRequest dealRequest = (DealRequest) obj;
+        return this.productId.equals(dealRequest.productId);
     }
 }

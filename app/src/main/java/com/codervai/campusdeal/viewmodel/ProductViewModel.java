@@ -168,4 +168,22 @@ public class ProductViewModel extends ViewModel {
                 });
         return searchResult;
     }
+
+    public StateLiveData<Product> getProduct(String productId){
+        StateLiveData<Product> productLiveData = new StateLiveData<>();
+        db.collection(Constants.PRODUCT_COLLECTION)
+                .document(productId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        productLiveData.postSuccess(documentSnapshot.toObject(Product.class));
+                    }else{
+                        productLiveData.postError(new Exception("product not found"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    productLiveData.postError(new Exception("product not found"));
+                });
+        return productLiveData;
+    }
 }

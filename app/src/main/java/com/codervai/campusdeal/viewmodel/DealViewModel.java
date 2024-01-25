@@ -1,5 +1,7 @@
 package com.codervai.campusdeal.viewmodel;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
@@ -11,9 +13,11 @@ import com.codervai.campusdeal.util.StateLiveData;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -82,5 +86,27 @@ public class DealViewModel extends ViewModel {
                 .addOnFailureListener(cancelDealRequestLiveData::postError);
 
         return cancelDealRequestLiveData;
+    }
+
+    public StateLiveData<List<DealRequest>> getDealRequests(String field, String value){
+        StateLiveData<List<DealRequest>> dealRequestLiveData = new StateLiveData<>();
+
+        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                .whereEqualTo(field, value)
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<DealRequest> dealRequests = queryDocumentSnapshots.toObjects(DealRequest.class);
+                    if(dealRequests.isEmpty()){
+                        dealRequestLiveData.postError(new Exception("no deal request found"));
+                    }else{
+                        dealRequestLiveData.postSuccess(dealRequests);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    dealRequestLiveData.postError(new Exception("no deal request found"));
+                });
+
+        return dealRequestLiveData;
     }
 }
