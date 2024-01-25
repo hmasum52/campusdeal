@@ -129,4 +129,43 @@ public class ProductViewModel extends ViewModel {
     public StateLiveData<List<Product>> getNearestProductsByCategory(String category){
         return nearestProductMap.get(category);
     }
+
+    public StateLiveData<List<Product>> searchProduct(String name){
+        StateLiveData<List<Product>> searchResult = new StateLiveData<>();
+        db.collection(Constants.PRODUCT_COLLECTION)
+                .orderBy("title")
+                .where(
+                        // https://stackoverflow.com/a/75877483/13877490
+                        Filter.or(
+                                // query as it is
+                                Filter.and(
+                                        Filter.greaterThanOrEqualTo("title", name),
+                                        Filter.lessThanOrEqualTo("title", name + "\uf8ff")
+                                ),
+                                // capitalize first letter
+                                Filter.and(
+                                        Filter.greaterThanOrEqualTo("title", name.substring(0,1).toUpperCase() + name.substring(1)),
+                                        Filter.lessThanOrEqualTo("title", name.substring(0,1).toUpperCase() + name.substring(1) + "\uf8ff")
+                                ),
+                                // lowercase
+                                Filter.and(
+                                        Filter.greaterThanOrEqualTo("title", name.toLowerCase()),
+                                        Filter.lessThanOrEqualTo("title", name.toLowerCase() + "\uf8ff")
+                                )
+                        ) // end of or
+                )
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // get ads
+                    Log.d("search->", "onSuccess: "+queryDocumentSnapshots.size());
+                    // make adList
+                    List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);
+                    searchResult.postSuccess(productList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("search->", "onFailure: "+e.getMessage());
+                    searchResult.postError(new Exception("Error searching products"));
+                });
+        return searchResult;
+    }
 }
