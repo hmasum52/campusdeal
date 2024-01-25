@@ -263,9 +263,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="4dp"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/contact"
                         app:layout_constraintStart_toEndOf="@+id/owner_avatar"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Hasan Masum" />
@@ -275,11 +275,25 @@
                         style="@style/TextAppearance.Material3.LabelSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
                         android:textColor="@color/text_light"
-                        app:layout_constraintEnd_toEndOf="@+id/owner_name"
+                        app:layout_constraintEnd_toStartOf="@+id/contact"
                         app:layout_constraintStart_toStartOf="@+id/owner_name"
                         app:layout_constraintTop_toBottomOf="@+id/owner_name"
                         tools:text="hasanmasum1852@gmail.com" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/contact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:src="@drawable/baseline_send_24"
+                        app:cornerRadius="10dp"
+                        app:iconTint="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/white" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -317,7 +331,7 @@
             android:id="@+id/deal_action_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Contact"
+            tools:text="deal action"
             app:cornerRadius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

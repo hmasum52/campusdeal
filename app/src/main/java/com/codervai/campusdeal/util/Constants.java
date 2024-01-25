@@ -44,4 +44,6 @@ public class Constants {
     public static final String PRODUCT_COLLECTION = "products";
 
     public static final String WISHLIST_COLLECTION = "wishlist";
+
+    public static final String DEAL_REQUEST_COLLECTION = "deal_request";
 }

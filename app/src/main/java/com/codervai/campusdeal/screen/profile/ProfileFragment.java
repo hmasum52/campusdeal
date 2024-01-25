@@ -40,7 +40,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userVM = new ViewModelProvider(this).get(UserViewModel.class);
+        userVM = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -20,6 +21,7 @@ import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.util.Util;
+import com.codervai.campusdeal.viewmodel.DealViewModel;
 import com.codervai.campusdeal.viewmodel.UserViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,6 +54,8 @@ public class ProductDetailsFragment extends Fragment {
 
     UserViewModel userVM;
 
+    DealViewModel dealVM;
+
     boolean owner;
 
     @Override
@@ -61,6 +65,7 @@ public class ProductDetailsFragment extends Fragment {
             product = Parcels.unwrap(getArguments().getParcelable("product"));
         }
         userVM = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        dealVM = new ViewModelProvider(this).get(DealViewModel.class);
     }
 
     @Nullable
@@ -107,6 +112,8 @@ public class ProductDetailsFragment extends Fragment {
         enableContactButton();
 
         enableFavoriteButton(user);
+
+        enableDealActionButton();
     }
 
     private void showProductImages() {
@@ -147,7 +154,7 @@ public class ProductDetailsFragment extends Fragment {
             return;
         }
 
-        mVB.dealActionBtn.setOnClickListener(v -> {
+        mVB.contact.setOnClickListener(v -> {
             String subject = "Want to buy "+product.getTitle();
             String to = mVB.ownerEmail.getText().toString();
             String body =  "Hi, I am interested in your product "
@@ -225,6 +232,31 @@ public class ProductDetailsFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Snackbar.make(mVB.getRoot(), "Failed to remove from wishlist. Something went wrong!", Snackbar.LENGTH_SHORT).show();
                 });
+    }
+
+
+
+    private void enableDealActionButton() {
+        if(owner){
+            // will change later
+            mVB.favBtnCard.setVisibility(View.GONE);
+            return;
+        }
+
+        mVB.dealActionBtn.setText("Make Request");
+
+        mVB.dealActionBtn.setOnClickListener(v -> {
+
+            // make deal request
+            dealVM.addDealRequest(userVM.getUser(), product)
+                    .observe(getViewLifecycleOwner(), booleanStateData -> {
+                        if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                            Snackbar.make(mVB.getRoot(), "Request sent", Snackbar.LENGTH_SHORT).show();
+                            // disable request button
+                            mVB.dealActionBtn.setEnabled(false);
+                        }
+                    });
+        });
     }
 
 }
