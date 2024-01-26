@@ -69,11 +69,15 @@ public class ProductDetailsFragment extends Fragment {
 
     boolean owner;
 
+    boolean my_purchase;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        my_purchase = false;
         if(getArguments()!=null){
             product = Parcels.unwrap(getArguments().getParcelable("product"));
+            my_purchase = getArguments().getBoolean("my_purchase");
         }
         userVM = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         dealVM = new ViewModelProvider(this).get(DealViewModel.class);
@@ -249,7 +253,7 @@ public class ProductDetailsFragment extends Fragment {
 
     private void enableDealActionButton() {
         // check if owner
-        if(owner){
+        if(owner || my_purchase){
             // have to accept the request or decline
             mVB.dealActionBtn.setVisibility(View.GONE);
         }

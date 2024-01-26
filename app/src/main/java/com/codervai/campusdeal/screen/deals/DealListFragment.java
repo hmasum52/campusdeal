@@ -1,7 +1,6 @@
 package com.codervai.campusdeal.screen.deals;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentDealListBinding;
+import com.codervai.campusdeal.model.Deal;
 import com.codervai.campusdeal.model.DealRequest;
 import com.codervai.campusdeal.model.Product;
-import com.codervai.campusdeal.screen.common.RecyclerItemClickListener;
 import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.util.Util;
@@ -39,6 +39,7 @@ public class DealListFragment extends Fragment {
     private ProductViewModel productVM;
 
     DealRequestListAdapter dealRequestListAdapter;
+    DealHistoryListAdapter dealHistoryListAdapter;
 
     // index of this fragment in the viewpager
     private int position = 0;
@@ -76,6 +77,14 @@ public class DealListFragment extends Fragment {
                     });
         });
 
+        dealHistoryListAdapter = new DealHistoryListAdapter(deal -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("product", Parcels.wrap(deal.getProduct()));
+            bundle.putBoolean("my_purchase", true);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_myDealsFragment_to_productDetailsFragment, bundle);
+        });
+
         switch (position){
             case 0: // Request for you
                 mVB.dealListRv.setAdapter(dealRequestListAdapter);
@@ -87,8 +96,10 @@ public class DealListFragment extends Fragment {
                 updateMyRequestUI();
                 break;
             case 2: // My purchase
+                updateMyPurchaseUI();
                 break;
             case 3: // My sell
+                updateMySellUI();
                 break;
         }
     }
@@ -143,4 +154,58 @@ public class DealListFragment extends Fragment {
                     }
                 });
     }
+
+
+    private void updateMyPurchaseUI() {
+        mVB.dealListRv.setAdapter(dealHistoryListAdapter);
+        dealHistoryListAdapter.setBuyer(true);
+        mVB.loadingPb.setVisibility(View.VISIBLE);
+        dealVM.getDeals(Constants.BUY_HISTORY_COLLECTION)
+                .observe(getViewLifecycleOwner(), listStateData -> {
+                    mVB.loadingPb.setVisibility(View.GONE);
+                    if(listStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                        List<Deal> deals = listStateData.getData();
+                        if(deals == null){
+                            updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                            return;
+                        }
+                        if(deals.size() == 0){
+                            updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                        }else{
+                            mVB.noItemPlaceholder.getRoot().setVisibility(View.GONE);
+                            mVB.dealListRv.setVisibility(View.VISIBLE);
+                            dealHistoryListAdapter.differ.submitList(deals);
+                        }
+                    }else{
+                        updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                    }
+                });
+    }
+
+
+    private void updateMySellUI() {
+        mVB.dealListRv.setAdapter(dealHistoryListAdapter);
+        mVB.loadingPb.setVisibility(View.VISIBLE);
+        dealVM.getDeals(Constants.SELL_HISTORY_COLLECTION)
+                .observe(getViewLifecycleOwner(), listStateData -> {
+                    mVB.loadingPb.setVisibility(View.GONE);
+                    if(listStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                        List<Deal> deals = listStateData.getData();
+                        if(deals == null){
+                            updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                            return;
+                        }
+                        if(deals.size() == 0){
+                            updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                        }else{
+                            mVB.noItemPlaceholder.getRoot().setVisibility(View.GONE);
+                            mVB.dealListRv.setVisibility(View.VISIBLE);
+                            dealHistoryListAdapter.differ.submitList(deals);
+                        }
+                    }else{
+                        updateNoItemUI("You haven't sold anything yet!", "You can see all the items you have sold here");
+                    }
+                });
+    }
+
 }

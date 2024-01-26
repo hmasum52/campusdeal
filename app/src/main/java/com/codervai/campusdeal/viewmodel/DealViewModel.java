@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
+import com.codervai.campusdeal.model.Deal;
 import com.codervai.campusdeal.model.DealRequest;
 import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
@@ -12,6 +13,7 @@ import com.codervai.campusdeal.util.Constants;
 import com.codervai.campusdeal.util.StateLiveData;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -182,5 +184,28 @@ public class DealViewModel extends ViewModel {
                 .addOnFailureListener(declineDealRequestLiveData::postError);
 
         return declineDealRequestLiveData;
+    }
+
+    // get deal history
+    public StateLiveData<List<Deal>> getDeals(String collection){
+        StateLiveData<List<Deal>> dealLiveData = new StateLiveData<>();
+
+        db.collection(Constants.USER_COLLECTION)
+                .document(FirebaseAuth.getInstance().getUid())
+                .collection(collection) // bus_history or sell_history
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Deal> deals = queryDocumentSnapshots.toObjects(Deal.class);
+                    if(deals.isEmpty()){
+                        dealLiveData.postError(new Exception("no deal found"));
+                    }else{
+                        dealLiveData.postSuccess(deals);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    dealLiveData.postError(new Exception("no deal found"));
+                });
+
+        return dealLiveData;
     }
 }
