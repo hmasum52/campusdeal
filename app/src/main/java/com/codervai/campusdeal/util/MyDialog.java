@@ -3,6 +3,7 @@ package com.codervai.campusdeal.util;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.view.View;
 import android.widget.TextView;
 
 public class MyDialog {
@@ -29,6 +30,10 @@ public class MyDialog {
 
     public void hideDialog(){
         dialog.dismiss();
+    }
+
+    public <T extends View> T findViewById(int id){
+        return dialog.findViewById(id);
     }
 
 }

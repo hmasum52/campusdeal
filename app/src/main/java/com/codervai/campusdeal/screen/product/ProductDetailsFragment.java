@@ -1,11 +1,14 @@
 package com.codervai.campusdeal.screen.product;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,11 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.codervai.campusdeal.R;
 import com.codervai.campusdeal.databinding.FragmentProductDetailsBinding;
 import com.codervai.campusdeal.model.DealRequest;
 import com.codervai.campusdeal.model.Product;
 import com.codervai.campusdeal.model.User;
 import com.codervai.campusdeal.util.Constants;
+import com.codervai.campusdeal.util.MyDialog;
 import com.codervai.campusdeal.util.StateData;
 import com.codervai.campusdeal.util.Util;
 import com.codervai.campusdeal.viewmodel.DealViewModel;
@@ -49,6 +54,7 @@ public class ProductDetailsFragment extends Fragment {
     public static final String MAKE_REQUEST = "Make Request";
     public static final String CANCEL_REQUEST = "Cancel Request";
     public static final String ACCEPT = "Accept";
+    private static final String MAKE_DEAL = "Make Deal";
 
     FragmentProductDetailsBinding mVB;
 
@@ -155,7 +161,6 @@ public class ProductDetailsFragment extends Fragment {
 
     private void enableContactButton() {
         if(owner) {
-            mVB.dealActionBtn.setVisibility(View.GONE);
             mVB.contact.setVisibility(View.GONE);
             return;
         }
@@ -243,10 +248,10 @@ public class ProductDetailsFragment extends Fragment {
 
 
     private void enableDealActionButton() {
+        // check if owner
         if(owner){
-            // will change later
-            mVB.favBtnCard.setVisibility(View.GONE);
-            return;
+            // have to accept the request or decline
+            mVB.dealActionBtn.setVisibility(View.GONE);
         }
 
         dealVM.getDealRequest(product.getId())
@@ -254,6 +259,16 @@ public class ProductDetailsFragment extends Fragment {
                         if(dealRequestStateData.getStatus() == StateData.DataStatus.SUCCESS){
                             DealRequest dealRequest = dealRequestStateData.getData();
                             if (dealRequest != null ) {
+
+                                // check if owner
+                                if(owner){
+                                    // have to accept the request or decline
+                                    mVB.dealActionBtn.setVisibility(View.VISIBLE);
+                                    mVB.dealActionBtn.setText(MAKE_DEAL);
+                                    return;
+                                }
+
+
                                 // check if user is buyer
                                 if(dealRequest.getBuyerId().equals(userVM.getUser().getUid())){
                                     mVB.dealActionBtn.setText(CANCEL_REQUEST);
@@ -289,7 +304,38 @@ public class ProductDetailsFragment extends Fragment {
                                 mVB.dealActionBtn.setText(MAKE_REQUEST);
                             }
                         });
-            }else{
+            }
+            else if (buttonText.equals(MAKE_DEAL)){
+                // accept or decline request
+                // open a dialog
+                MyDialog dialog = new MyDialog(requireContext(), R.layout.dialog_make_deal);
+                dialog.showDialog();
+
+                Button makeDealBtn = dialog.findViewById(R.id.make_deal_btn);
+                Button declineBtn = dialog.findViewById(R.id.decline_btn);
+                Button cancelBtn = dialog.findViewById(R.id.cancel_btn);
+
+                //decline
+                declineBtn.setOnClickListener(v1 -> {
+                    dialog.hideDialog();
+                    // decline the request
+                    dealVM.cancelDealRequest(product.getId())
+                            .observe(getViewLifecycleOwner(), booleanStateData -> {
+                                if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                                    Snackbar.make(mVB.getRoot(), "Request declined", Snackbar.LENGTH_SHORT).show();
+                                    mVB.dealActionBtn.setVisibility(View.GONE);
+                                }else{
+                                    Snackbar.make(mVB.getRoot(), "Failed to decline request", Snackbar.LENGTH_SHORT).show();
+                                }
+                            });
+                });
+
+                // cancel
+                cancelBtn.setOnClickListener(v1 -> {
+                    dialog.hideDialog();
+                });
+            }
+            else{
                 mVB.dealActionBtn.setEnabled(false);
             }
 

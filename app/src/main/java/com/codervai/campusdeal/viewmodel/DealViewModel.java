@@ -109,4 +109,21 @@ public class DealViewModel extends ViewModel {
 
         return dealRequestLiveData;
     }
+
+    // make deal
+
+    // decline deal
+    public StateLiveData<Boolean> declineDealRequest(String productId){
+        StateLiveData<Boolean> declineDealRequestLiveData = new StateLiveData<>();
+
+        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                .document(productId)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    declineDealRequestLiveData.postSuccess(true);
+                })
+                .addOnFailureListener(declineDealRequestLiveData::postError);
+
+        return declineDealRequestLiveData;
+    }
 }
