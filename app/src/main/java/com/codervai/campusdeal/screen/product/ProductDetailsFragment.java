@@ -315,6 +315,25 @@ public class ProductDetailsFragment extends Fragment {
                 Button declineBtn = dialog.findViewById(R.id.decline_btn);
                 Button cancelBtn = dialog.findViewById(R.id.cancel_btn);
 
+                // make deal
+                makeDealBtn.setOnClickListener(v1 -> {
+                    dialog.hideDialog();
+
+                    MyDialog loading = new MyDialog(requireContext(), R.layout.dialog_loading);
+                    loading.showDialog("Loading...", R.id.loading_msg_tv);
+                    // make deal
+                    dealVM.makeDeal(product)
+                            .observe(getViewLifecycleOwner(), booleanStateData -> {
+                                loading.hideDialog();
+                                if(booleanStateData.getStatus() == StateData.DataStatus.SUCCESS){
+                                    Snackbar.make(mVB.getRoot(), "Deal made", Snackbar.LENGTH_SHORT).show();
+                                    mVB.dealActionBtn.setVisibility(View.GONE);
+                                }else{
+                                    Snackbar.make(mVB.getRoot(), "Failed to make deal", Snackbar.LENGTH_SHORT).show();
+                                }
+                            });
+                });
+
                 //decline
                 declineBtn.setOnClickListener(v1 -> {
                     dialog.hideDialog();

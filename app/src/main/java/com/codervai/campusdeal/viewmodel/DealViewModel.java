@@ -111,6 +111,63 @@ public class DealViewModel extends ViewModel {
     }
 
     // make deal
+    // delete deal request
+    // delete product
+    // move product & deal request to user's buy history
+    // move product & deal request to seller's sell history
+    public StateLiveData<Boolean> makeDeal(Product product){
+        StateLiveData<Boolean> makeDealLiveData = new StateLiveData<>();
+
+        // get deal request
+        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                .document(product.getId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    DealRequest dealRequest = documentSnapshot.toObject(DealRequest.class);
+                    if(dealRequest != null){
+                        // delete deal request
+                        db.collection(Constants.DEAL_REQUEST_COLLECTION)
+                                .document(dealRequest.getProductId())
+                                .delete()
+                                .addOnSuccessListener(unused -> {
+                                    // delete product
+                                    db.collection(Constants.PRODUCT_COLLECTION)
+                                            .document(product.getId())
+                                            .delete()
+                                            .addOnSuccessListener(unused1 -> {
+                                                // move product & deal request to user's buy history
+                                                Map<String, Object> dealHistory = new HashMap<>();
+                                                dealHistory.put("dealInfo", dealRequest);
+                                                dealHistory.put("product", product);
+                                                dealHistory.put("date", new Date());
+                                                db.collection(Constants.USER_COLLECTION)
+                                                        .document(dealRequest.getBuyerId())
+                                                        .collection(Constants.BUY_HISTORY_COLLECTION)
+                                                        .document(product.getId())
+                                                        .set(dealHistory)
+                                                        .addOnSuccessListener(unused2 -> {
+                                                            db.collection(Constants.USER_COLLECTION)
+                                                                    .document(dealRequest.getSellerId())
+                                                                    .collection(Constants.SELL_HISTORY_COLLECTION)
+                                                                    .document(product.getId())
+                                                                    .set(dealHistory)
+                                                                    .addOnSuccessListener(unused3 -> {
+                                                                        makeDealLiveData.postSuccess(true);
+                                                                    })
+                                                                    .addOnFailureListener(makeDealLiveData::postError);
+                                                        })
+                                                        .addOnFailureListener(makeDealLiveData::postError);
+                                            })
+                                            .addOnFailureListener(makeDealLiveData::postError);
+                                });
+                    }else{
+                        makeDealLiveData.postError(new Exception("deal request not found"));
+                    }
+                })
+                .addOnFailureListener(makeDealLiveData::postError);
+
+        return makeDealLiveData;
+    }
 
     // decline deal
     public StateLiveData<Boolean> declineDealRequest(String productId){

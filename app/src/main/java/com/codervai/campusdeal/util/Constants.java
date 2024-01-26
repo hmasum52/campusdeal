@@ -55,4 +55,8 @@ public class Constants {
     public static final String WISHLIST_COLLECTION = "wishlist";
 
     public static final String DEAL_REQUEST_COLLECTION = "deal_request";
+
+    public static final String BUY_HISTORY_COLLECTION = "buy_history";
+
+    public static final String SELL_HISTORY_COLLECTION = "sell_history";
 }
