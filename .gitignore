@@ -12,4 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+vcs.xml
 local.properties
+google-services.json
